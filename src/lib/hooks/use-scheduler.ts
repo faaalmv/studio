@@ -5,8 +5,7 @@ import { useState, useMemo, useCallback } from 'react';
 import type { Item, Schedule, Meal, ViewMode, Totals, Group } from '@/lib/types';
 import { initialItems, initialGroups } from '@/lib/data';
 import { MEALS, DAYS_IN_MONTH } from '@/lib/types';
-import { useToast } from '@/hooks/use-toast';
-import { exportToCsv } from '@/lib/utils';
+import { useSchedulerActions } from './use-scheduler-actions';
 
 const transformInitialData = (items: Item[]): Schedule => {
   const schedule: Schedule = {};
@@ -38,7 +37,6 @@ export const useScheduler = () => {
   const [schedule, setSchedule] = useState<Schedule>(() => transformInitialData(items));
   const [viewMode, setViewMode] = useState<ViewMode>('general');
   const [filter, setFilter] = useState('');
-  const { toast } = useToast();
   const [selectedMonth, setSelectedMonth] = useState<string>(months[0]);
   const [selectedService, setSelectedService] = useState<string>(services[0]);
 
@@ -77,60 +75,15 @@ export const useScheduler = () => {
     return Object.values(schedule[itemId][day]).reduce((sum, current) => sum + current, 0);
   }, [schedule]);
 
-  const updateQuantity = useCallback((itemId: string, day: number, meal: Meal, newQuantity: number, isGeneral: boolean = false) => {
-    const item = items.find(i => i.id === itemId);
-    if (!item) return;
-
-    const currentMealQuantity = schedule[itemId]?.[day]?.[meal] ?? 0;
-    const totalScheduled = totals[itemId]?.total ?? 0;
-    const available = item.totalPossible - (totalScheduled - currentMealQuantity);
-
-    const finalQuantity = Math.max(0, newQuantity);
-
-    if (finalQuantity > available && !isGeneral) {
-        toast({
-            title: "Límite Total Excedido",
-            description: `No puedes planificar más de ${item.totalPossible} unidades de ${item.description}.`,
-            variant: "destructive",
-        });
-        
-        setSchedule(prevSchedule => ({
-          ...prevSchedule,
-          [itemId]: {
-            ...prevSchedule[itemId],
-            [day]: {
-              ...prevSchedule[itemId][day],
-              [meal]: available > 0 ? available : 0,
-            },
-          },
-        }));
-        return;
-    }
-
-
-    setSchedule(prevSchedule => {
-      const newDaySchedule = isGeneral
-        ? { desayuno: finalQuantity, almuerzo: 0, cena: 0 }
-        : { ...prevSchedule[itemId][day], [meal]: finalQuantity };
-
-      return {
-        ...prevSchedule,
-        [itemId]: {
-          ...prevSchedule[itemId],
-          [day]: newDaySchedule,
-        },
-      };
-    });
-  }, [getDailyTotal, items, schedule, toast, totals]);
-
-  const handleExport = useCallback(() => {
-    const fileName = `Programacion_${selectedMonth}_${selectedService.replace(/\s+/g, '_')}.csv`;
-    exportToCsv(filteredItems, schedule, totals, viewMode, fileName);
-    toast({
-      title: "Exportación Exitosa",
-      description: "Tu planificación ha sido exportada a CSV.",
-    });
-  }, [filteredItems, schedule, totals, viewMode, toast, selectedMonth, selectedService]);
+  const { updateQuantity, onExport } = useSchedulerActions(
+    items,
+    schedule,
+    totals,
+    viewMode,
+    selectedMonth,
+    selectedService,
+    setSchedule
+  );
 
   const selectedMonthLabel = useMemo(() => {
     return monthOptions.find(m => m.value === selectedMonth)?.label || selectedMonth;
@@ -148,7 +101,7 @@ export const useScheduler = () => {
     setFilter,
     updateQuantity,
     getDailyTotal,
-    onExport: handleExport,
+    onExport,
     selectedMonth,
     setSelectedMonth,
     monthOptions,
@@ -158,5 +111,3 @@ export const useScheduler = () => {
     selectedMonthLabel,
   };
 };
-
-    
