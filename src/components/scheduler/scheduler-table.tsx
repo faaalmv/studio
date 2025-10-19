@@ -20,19 +20,19 @@ const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals
     
     const groupBg = cn("bg-card");
     const groupBorder = cn(
-        "border-l-4",
+        "shadow-[inset_6px_0_8px_-5px_var(--group-color)]",
         {
-            'border-chart-1': item.group === 'Abarrotes',
-            'border-chart-2': item.group === 'Carnes',
-            'border-chart-3': item.group === 'Embutidos',
-            'border-chart-4': item.group === 'Frutas',
-            'border-chart-5': item.group === 'Lacteos',
-            'border-cyan-500': item.group === 'Aves y Huevo',
-            'border-indigo-500': item.group === 'Pescados y Mariscos',
-            'border-amber-500': item.group === 'Panaderia y Tortilleria',
-            'border-lime-500': item.group === 'Semillas y Cereales',
-            'border-emerald-500': item.group === 'Verduras y Hortalizas',
-            'border-sky-500': item.group === 'Congelados',
+            '[--group-color:hsl(var(--chart-1))]': item.group === 'Abarrotes',
+            '[--group-color:hsl(var(--chart-2))]': item.group === 'Carnes',
+            '[--group-color:hsl(var(--chart-3))]': item.group === 'Embutidos',
+            '[--group-color:hsl(var(--chart-4))]': item.group === 'Frutas',
+            '[--group-color:hsl(var(--chart-5))]': item.group === 'Lacteos',
+            '[--group-color:hsl(var(--cyan-500))]': item.group === 'Aves y Huevo',
+            '[--group-color:hsl(var(--indigo-500))]': item.group === 'Pescados y Mariscos',
+            '[--group-color:hsl(var(--amber-500))]': item.group === 'Panaderia y Tortilleria',
+            '[--group-color:hsl(var(--lime-500))]': item.group === 'Semillas y Cereales',
+            '[--group-color:hsl(var(--emerald-500))]': item.group === 'Verduras y Hortalizas',
+            '[--group-color:hsl(var(--sky-500))]': item.group === 'Congelados',
         }
     );
 
@@ -49,17 +49,18 @@ const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals
     });
 
     const total = totals[item.id].total;
+    const rowClasses = "group row-transition animate-slide-down-fade-in bg-card hover:z-20";
 
     return (
-        <TableRow className={cn("group row-transition animate-slide-down-fade-in bg-card hover:z-20", className, isLast && "border-b-0")} style={style}>
-            <TableCell className={cn(cellStyles, "sticky left-0 z-10 w-48 p-2 text-left align-middle", groupBorder, isLast ? "border-b-0" : "border-b", isScrolled && "shadow-lg", groupBg)}>
+        <TableRow className={cn(rowClasses, className)} style={style}>
+            <TableCell className={cn(cellStyles, "sticky left-0 z-10 w-48 p-2 text-left align-middle", isScrolled && "shadow-lg", groupBg, "shadow-[inset_0_-1px_0_0_hsl(var(--border))]")}>
                 <div className="font-bold text-sm">{item.description}</div>
                 <Badge variant="secondary" className="font-mono text-xs mt-1">{item.code}</Badge>
             </TableCell>
-            <TableCell className={cn(cellStyles, "sticky left-48 z-10 w-24 text-center align-middle", isLast ? "border-b-0" : "border-b", isScrolled && "shadow-lg", groupBg)}>{item.unit}</TableCell>
-            <TableCell className={cn(cellStyles, "sticky text-center left-[18rem] w-24 font-mono z-10 align-middle text-lg", isLast ? "border-b-0" : "border-b", isScrolled && "shadow-lg", groupBg, totals[item.id].isOverLimit && "text-destructive")}>{total}</TableCell>
-            <TableCell className={cn(cellStyles, "sticky text-center left-[24rem] w-24 font-mono z-10 align-middle text-lg", remainingCellBg, isLast ? "border-b-0" : "border-b", isScrolled && "shadow-lg", "font-bold")}>{remaining}</TableCell>
-            <TableCell className={cn(cellStyles, "sticky text-center left-[30rem] w-24 z-10 align-middle", isLast ? "border-b-0" : "border-b", isScrolled && "shadow-lg", groupBg)}>
+            <TableCell className={cn(cellStyles, "sticky left-48 z-10 w-24 text-center align-middle", isScrolled && "shadow-lg", groupBg, "shadow-[inset_0_-1px_0_0_hsl(var(--border))]")}>{item.unit}</TableCell>
+            <TableCell className={cn(cellStyles, "sticky text-center left-[18rem] w-24 font-mono z-10 align-middle text-lg", isScrolled && "shadow-lg", groupBg, totals[item.id].isOverLimit && "text-destructive", "shadow-[inset_0_-1px_0_0_hsl(var(--border))]")}>{total}</TableCell>
+            <TableCell className={cn(cellStyles, "sticky text-center left-[24rem] w-24 font-mono z-10 align-middle text-lg", remainingCellBg, isScrolled && "shadow-lg", "font-bold", "shadow-[inset_0_-1px_0_0_hsl(var(--border))]")}>{remaining}</TableCell>
+            <TableCell className={cn(cellStyles, "sticky text-center left-[30rem] z-10 align-middle w-24", isScrolled && "shadow-lg", groupBg, groupBorder, "shadow-[inset_0_-1px_0_0_hsl(var(--border))]")}>
                 <div className="flex justify-center items-center">
                     <div className={cn('h-8 w-8 rounded-full flex items-center justify-center transition-all duration-300', 
                         totals[item.id].isOverLimit ? 'bg-rose-500/20' : (total > 0 ? 'bg-green-500/20' : 'bg-transparent')
@@ -78,7 +79,7 @@ const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals
 
                 if (viewMode === 'general') {
                     return (
-                        <TableCell key={`${item.id}-${day}`} className={cn("text-center w-24 align-middle border-l", cellStyles, isLast ? "border-b-0" : "border-b", isHovered && "bg-primary/5", (dailyTotal > 0 && !isHovered) && 'bg-primary/5')}>
+                        <TableCell key={`${item.id}-${day}`} className={cn("text-center w-24 align-middle border-l", cellStyles, isHovered && "bg-primary/5", (dailyTotal > 0 && !isHovered) && 'bg-primary/5', "shadow-[inset_0_-1px_0_0_hsl(var(--border))]")}>
                              <QuantityStepper
                                 value={dailyTotal}
                                 onValueChange={(newValue) => {
@@ -97,7 +98,7 @@ const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals
                         {MEALS.map((meal, mealIndex) => {
                             const mealValue = schedule[item.id]?.[day]?.[meal] ?? 0;
                             return (
-                                <TableCell key={`${item.id}-${day}-${meal}`} className={cn("w-12 align-middle border-l", cellStyles, isLast ? "border-b-0" : "border-b", isHovered && "bg-primary/5", (mealValue > 0 && !isHovered) && 'bg-primary/5')}>
+                                <TableCell key={`${item.id}-${day}-${meal}`} className={cn("w-12 align-middle border-l", cellStyles, isHovered && "bg-primary/5", (mealValue > 0 && !isHovered) && 'bg-primary/5', "shadow-[inset_0_-1px_0_0_hsl(var(--border))]")}>
                                     <QuantityStepper
                                         value={mealValue}
                                         onValueChange={(newValue) => updateQuantity(item.id, day, meal, newValue)}
@@ -222,5 +223,3 @@ export function SchedulerTable({
         </div>
     );
 }
-
-    
