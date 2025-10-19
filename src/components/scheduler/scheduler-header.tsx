@@ -22,25 +22,25 @@ export function SchedulerHeader({
   onExport,
 }: SchedulerHeaderProps) {
   return (
-    <div className="flex flex-col sm:flex-row items-center gap-4 mt-4">
+    <div className="flex flex-col sm:flex-row items-center gap-4 pt-4">
       <div className="relative w-full sm:w-auto sm:flex-grow">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
           placeholder="Filtrar por descripción, código o grupo..."
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          className="pl-10"
+          className="pl-10 bg-background"
         />
       </div>
       <div className="flex items-center gap-2">
         <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as ViewMode)}>
-          <TabsList>
+          <TabsList className="bg-muted">
             <TabsTrigger value="general">General</TabsTrigger>
             <TabsTrigger value="detailed">Detallado</TabsTrigger>
           </TabsList>
         </Tabs>
         <Button onClick={onExport} variant="outline">
-          <FileDown className="mr-2 h-4 w-4" />
+          <FileDown className="mr-2 h-4 w-4 text-primary" />
           Exportar
         </Button>
       </div>
