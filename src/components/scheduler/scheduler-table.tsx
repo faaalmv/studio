@@ -21,14 +21,14 @@ export function SchedulerTable({
   getDailyTotal
 }: SchedulerTableProps) {
 
-  const cellStyles = "border-b border-r border-border/50 shadow-sm";
-  const headerCellStyles = cn(cellStyles, "bg-muted/60");
+  const cellStyles = "border-b border-r p-1";
+  const headerCellStyles = cn(cellStyles, "bg-muted/60 p-2");
 
   const stickyHeaderClass = "sticky z-10 top-0 bg-card/95 backdrop-blur-sm";
-  const stickyCellClass = "sticky bg-card/95 backdrop-blur-sm";
+  const stickyCellClass = "sticky bg-card/95 backdrop-blur-sm z-[1]";
   
   return (
-    <div className="w-full relative max-h-[70vh] overflow-auto border-t">
+    <div className="w-full h-full overflow-auto border-t">
       <Table className="min-w-max border-separate border-spacing-0">
         <TableHeader className="sticky top-0 z-20 bg-card/95 backdrop-blur-sm">
           <TableRow className="hover:bg-transparent">
@@ -52,9 +52,9 @@ export function SchedulerTable({
                 <TableHead className={cn(stickyHeaderClass, headerCellStyles, "left-[34rem] top-[3.2rem] z-30")}></TableHead>
                 {days.map(day => (
                     <React.Fragment key={`meals-${day}`}>
-                        <TableHead className={cn(stickyHeaderClass, headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 p-2 top-[3.2rem]")}>D</TableHead>
-                        <TableHead className={cn(stickyHeaderClass, headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 p-2 top-[3.2rem]")}>A</TableHead>
-                        <TableHead className={cn(stickyHeaderClass, headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 p-2 top-[3.2rem]")}>C</TableHead>
+                        <TableHead className={cn(stickyHeaderClass, headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 top-[3.2rem]")}>D</TableHead>
+                        <TableHead className={cn(stickyHeaderClass, headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 top-[3.2rem]")}>A</TableHead>
+                        <TableHead className={cn(stickyHeaderClass, headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 top-[3.2rem]")}>C</TableHead>
                     </React.Fragment>
                 ))}
              </TableRow>
@@ -64,15 +64,17 @@ export function SchedulerTable({
           {items.map((item, index) => (
             <TableRow key={item.id} className="transition-opacity animate-in fade-in-0" style={{ animationDelay: `${index * 20}ms` }}>
               <TableCell className={cn(stickyCellClass, cellStyles, "left-0 w-60 z-20")}>
-                <div className="font-medium">{item.description}</div>
-                <div className="text-xs text-muted-foreground">{item.group}</div>
+                <div className="font-medium px-2 py-1">{item.description}</div>
+                <div className="text-xs text-muted-foreground px-2">{item.group}</div>
               </TableCell>
-              <TableCell className={cn(stickyCellClass, cellStyles, "left-60 w-28 z-20")}>
-                <Badge variant="outline">{item.code}</Badge>
+              <TableCell className={cn(stickyCellClass, cellStyles, "left-60 w-28 z-20 align-middle")}>
+                <div className='p-2'>
+                  <Badge variant="outline">{item.code}</Badge>
+                </div>
               </TableCell>
-              <TableCell className={cn(stickyCellClass, cellStyles, "text-center left-[22rem] w-24 font-mono z-20")}>{totals[item.id].total}</TableCell>
-              <TableCell className={cn(stickyCellClass, cellStyles, "text-center left-[28rem] w-24 font-mono z-20", totals[item.id].isOverLimit ? "text-destructive" : "text-muted-foreground")}>{totals[item.id].remaining}</TableCell>
-              <TableCell className={cn(stickyCellClass, cellStyles, "text-center left-[34rem] w-24 z-20")}>
+              <TableCell className={cn(stickyCellClass, cellStyles, "text-center left-[22rem] w-24 font-mono z-20 align-middle")}>{totals[item.id].total}</TableCell>
+              <TableCell className={cn(stickyCellClass, cellStyles, "text-center left-[28rem] w-24 font-mono z-20 align-middle", totals[item.id].isOverLimit ? "text-destructive" : "text-muted-foreground")}>{totals[item.id].remaining}</TableCell>
+              <TableCell className={cn(stickyCellClass, cellStyles, "text-center left-[34rem] w-24 z-20 align-middle")}>
                 {totals[item.id].isOverLimit ? (
                   <TriangleAlert className="h-5 w-5 text-destructive mx-auto" />
                 ) : (
@@ -83,7 +85,7 @@ export function SchedulerTable({
                 if (viewMode === 'general') {
                    const dailyTotal = getDailyTotal(item.id, day);
                    return (
-                    <TableCell key={`${item.id}-${day}`} className={cn("p-1 text-center w-24", cellStyles)}>
+                    <TableCell key={`${item.id}-${day}`} className={cn("text-center w-24 align-middle", cellStyles)}>
                         <QuantityStepper
                           value={dailyTotal}
                           onValueChange={(newValue) => {
@@ -99,7 +101,7 @@ export function SchedulerTable({
                 return (
                     <React.Fragment key={`${item.id}-${day}-detailed`}>
                         {MEALS.map(meal => (
-                            <TableCell key={`${item.id}-${day}-${meal}`} className={cn("p-1 w-12", cellStyles)}>
+                            <TableCell key={`${item.id}-${day}-${meal}`} className={cn("w-12 align-middle", cellStyles)}>
                                 <QuantityStepper 
                                     value={schedule[item.id][day][meal]}
                                     onValueChange={(newValue) => updateQuantity(item.id, day, meal, newValue)}

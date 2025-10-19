@@ -20,10 +20,8 @@ export default function Scheduler() {
           onExport={scheduler.handleExport}
         />
       </CardHeader>
-      <CardContent className="p-0 flex-grow relative">
-        <div className="absolute inset-0">
-            <SchedulerTable {...scheduler} />
-        </div>
+      <CardContent className="p-0 flex-grow">
+          <SchedulerTable {...scheduler} />
       </CardContent>
     </Card>
   );
