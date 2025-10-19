@@ -2,32 +2,17 @@
 "use client";
 
 import React, { memo, useState, useRef, useCallback, useMemo, useId } from 'react';
+import { useScheduler } from "@/lib/hooks/use-scheduler";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import type { useScheduler } from '@/lib/hooks/use-scheduler';
 import { CheckCircle, AlertTriangle } from "lucide-react";
 import { QuantityStepper } from './quantity-stepper';
 import { MEALS, Meal } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { SchedulerGroupHeader } from './scheduler-group-header';
-import { useCollapsible } from '@/lib/hooks/use-collapsible';
-import { initialGroups } from '@/lib/data';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { GROUP_STYLES, STICKY_CELL_CLASSES, REMAINING_CELL_BG_CLASSES } from '@/lib/styles';
 
-type SchedulerTableProps = ReturnType<typeof useScheduler>;
-
-/**
- * A memoized component that renders a sticky table cell.
- * @param {object} props - The component props.
- * @param {boolean} props.isScrolled - Whether the table is scrolled.
- * @param {string} props.position - The sticky position of the cell.
- * @param {string} props.width - The width of the cell.
- * @param {React.ReactNode} props.children - The content of the cell.
- * @param {string} [props.className] - Additional CSS classes.
- * @param {boolean} [props.isHeader] - Whether the cell is a header cell.
- * @returns {JSX.Element} The rendered table cell.
- */
 const StickyTableCell = React.forwardRef<HTMLTableCellElement, { isScrolled: boolean, position: string, width: string, children: React.ReactNode, className?: string, isHeader?: boolean, [key: string]: any }>(({ isScrolled, position, width, children, className, isHeader, ...props }, ref) => (
     <TableCell 
         ref={ref}
@@ -47,13 +32,17 @@ const StickyTableCell = React.forwardRef<HTMLTableCellElement, { isScrolled: boo
 ));
 StickyTableCell.displayName = 'StickyTableCell';
 
-/**
- * A memoized component that renders a row in the scheduler table.
- * @param {object} props - The component props.
- * @returns {JSX.Element} The rendered table row.
- */
-const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals, viewMode, days, updateQuantity, getDailyTotal, errors, clearError, isLast, style, className, isScrolled, hoveredColumn }: { item: any, isLast: boolean, style: React.CSSProperties, className: string, isScrolled: boolean, hoveredColumn: number | null } & Omit<SchedulerTableProps, 'items' | 'groups'>) {
+const MemoizedTableRow = memo(function MemoizedTableRow({ item, isLast, style, className, isScrolled, hoveredColumn }: { item: any, isLast: boolean, style: React.CSSProperties, className: string, isScrolled: boolean, hoveredColumn: number | null }) {
     const id = useId();
+    const {
+        schedule,
+        totals,
+        viewMode,
+        days,
+        updateQuantity,
+        getDailyTotal,
+    } = useScheduler();
+    
     const cellStyles = "p-0 h-14 transition-colors duration-200";
     
     const groupStyle = GROUP_STYLES[item.group] || {};
@@ -86,7 +75,7 @@ const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals
     const onGeneralValueChange = useCallback((day, dailyTotal) => (newValue) => {
         const diff = newValue - dailyTotal;
         const currentBreakfast = schedule[item.id]?.[day]?.desayuno ?? 0;
-        updateQuantity(item.id, day, 'desayuno', currentBreakfast + diff, true);
+        updateQuantity(item.id, day, 'desayuno', currentBreakfast + diff);
     }, [item.id, schedule, updateQuantity]);
 
     return (
@@ -137,8 +126,6 @@ const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals
                             const borderClass = meal === 'cena' ? 'border-r-slate-300' : 'border-r-dotted border-r-slate-200';
                             const backgroundClass = (day - 1) % 2 === 0 ? 'bg-slate-50/50' : 'bg-card';
                             const mealStepperId = `${id}-stepper-${day}-${meal}`;
-                            const errorKey = `${item.id}-${day}-${meal}`;
-                            const isError = errors[errorKey];
 
                             return (
                                 <TableCell 
@@ -151,8 +138,6 @@ const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals
                                         value={mealValue}
                                         onValueChange={onDetailedValueChange(day, meal)}
                                         max={item.totalPossible}
-                                        isError={isError}
-                                        onClearError={() => clearError(errorKey)}
                                     />
                                 </TableCell>
                             );
@@ -164,24 +149,18 @@ const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals
     )
 });
 
-/**
- * The main table component for the scheduler.
- * @param {SchedulerTableProps} props - The component props, derived from the useScheduler hook.
- * @returns {JSX.Element} The rendered scheduler table.
- */
-export function SchedulerTable({
-    items,
-    groups,
-    schedule,
-    totals,
-    viewMode,
-    days,
-    updateQuantity,
-    getDailyTotal,
-    errors,
-    clearError,
-}: SchedulerTableProps) {
-    const { expandedItems, toggleItem } = useCollapsible(initialGroups.map(g => g.name));
+export function SchedulerTable() {
+    const {
+        items,
+        groups,
+        viewMode,
+        days,
+        totals,
+        toggleGroupCollapsed,
+        collapsedGroups,
+        getFilteredItems,
+    } = useScheduler();
+
     const [isScrolled, setIsScrolled] = useState(false);
     const [hoveredColumn, setHoveredColumn] = useState<number | null>(null);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -198,18 +177,20 @@ export function SchedulerTable({
         setHoveredColumn(day);
     }, []);
 
+    const filteredItems = getFilteredItems();
+
     const allItems = useMemo(() => {
       return groups.flatMap(group => {
-        const groupItems = items.filter(item => item.group === group.name);
+        const groupItems = filteredItems.filter(item => item.group === group.name);
         if (groupItems.length === 0) return [];
 
-        const isExpanded = expandedItems.includes(group.name);
+        const isExpanded = !collapsedGroups[group.name];
         const groupNode = { type: 'group', group, groupItems, isExpanded, id: group.name };
         const itemNodes = isExpanded ? groupItems.map(item => ({ type: 'item', item, id: item.id })) : [];
         
         return [groupNode, ...itemNodes];
       });
-    }, [groups, items, expandedItems]);
+    }, [groups, filteredItems, collapsedGroups]);
     
     const rowVirtualizer = useVirtualizer({
         count: allItems.length,
@@ -293,7 +274,7 @@ export function SchedulerTable({
                     items={groupItems}
                     totals={totals}
                     isExpanded={isExpanded}
-                    onToggle={() => toggleItem(group.name)}
+                    onToggle={() => toggleGroupCollapsed(group.name)}
                     colSpan={colSpan}
                     stickyTopClass={groupHeaderTop}
                     style={commonStyle}
@@ -306,14 +287,6 @@ export function SchedulerTable({
                 <MemoizedTableRow
                     key={virtualItem.key}
                     item={item}
-                    schedule={schedule}
-                    totals={totals}
-                    viewMode={viewMode}
-                    days={days}
-                    updateQuantity={updateQuantity}
-                    getDailyTotal={getDailyTotal}
-                    errors={errors}
-                    clearError={clearError}
                     isLast={false}
                     style={{...commonStyle, animationDelay: `${virtualItem.index * 30}ms` }}
                     className=""
