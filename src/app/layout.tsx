@@ -1,12 +1,13 @@
 import type {Metadata} from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster"
-import { Inter as FontSans } from "next/font/google"
+import { Poppins as FontSans } from "next/font/google"
 import { cn } from '@/lib/utils';
 
 const fontSans = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",
+  weight: ['300', '400', '500', '600', '700']
 })
 
 export const metadata: Metadata = {
