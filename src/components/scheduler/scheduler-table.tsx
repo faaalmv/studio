@@ -55,13 +55,6 @@ const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals
     const total = totals[item.id].total;
     const rowClasses = "group row-transition animate-slide-down-fade-in bg-card hover:z-10";
 
-    const onGeneralValueChange = useCallback((newValue) => {
-        const dailyTotal = getDailyTotal(item.id, 1);
-        const diff = newValue - dailyTotal;
-        const currentBreakfast = schedule[item.id]?.[1]?.desayuno ?? 0;
-        updateQuantity(item.id, 1, 'desayuno', currentBreakfast + diff, true);
-    }, [getDailyTotal, item.id, schedule, updateQuantity]);
-
     const onDetailedValueChange = useCallback((day, meal) => (newValue) => {
         updateQuantity(item.id, day, meal, newValue)
     }, [item.id, updateQuantity]);
@@ -104,7 +97,11 @@ const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals
                         <TableCell key={`${item.id}-${day}`} className={cn("text-center w-24 align-middle border-l", cellStyles, isHovered && "bg-primary/5", (dailyTotal > 0 && !isHovered) && 'bg-primary/5', "shadow-[inset_0_-1px_0_0_hsl(var(--border))]")}>
                              <QuantityStepper
                                 value={dailyTotal}
-                                onValueChange={onGeneralValueChange}
+                                onValueChange={(newValue) => {
+                                    const diff = newValue - dailyTotal;
+                                    const currentBreakfast = schedule[item.id]?.[day]?.desayuno ?? 0;
+                                    updateQuantity(item.id, day, 'desayuno', currentBreakfast + diff, true);
+                                }}
                                 max={item.totalPossible}
                                 dailyTotal={dailyTotal}
                             />
@@ -257,14 +254,14 @@ export function SchedulerTable({
                             const colSpan = 6 + (viewMode === 'detailed' ? days.length * 3 : days.length);
                             return (
                                 <SchedulerGroupHeader
-                                    key={group.name}
+                                    key={virtualItem.key}
                                     group={group}
                                     items={groupItems}
                                     totals={totals}
                                     isExpanded={isExpanded}
                                     onToggle={() => toggleItem(group.name)}
                                     colSpan={colSpan}
-                                    stickyTopClass={viewMode === 'detailed' ? 'top-[5rem]' : 'top-[2.5rem]'}
+                                    stickyTopClass={viewMode === 'detailed' ? 'top-[5rem]' : 'top-[2.srem]'}
                                     style={{
                                         transform: `translateY(${virtualItem.start}px)`,
                                         position: 'absolute',
@@ -279,7 +276,7 @@ export function SchedulerTable({
                         const { item } = row;
                         return (
                             <MemoizedTableRow
-                                key={item.id}
+                                key={virtualItem.key}
                                 item={item}
                                 schedule={schedule}
                                 totals={totals}
