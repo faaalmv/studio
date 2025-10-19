@@ -61,6 +61,22 @@ export default {
           '5': 'hsl(var(--chart-5))',
         },
       },
+      backgroundColor: {
+        'chart-1/5': 'hsla(var(--chart-1) / 0.05)',
+        'chart-2/5': 'hsla(var(--chart-2) / 0.05)',
+        'chart-3/5': 'hsla(var(--chart-3) / 0.05)',
+        'chart-4/5': 'hsla(var(--chart-4) / 0.05)',
+        'chart-5/5': 'hsla(var(--chart-5) / 0.05)',
+        'accent/5': 'hsla(var(--accent) / 0.05)',
+      },
+      borderColor: {
+        'l-chart-1': 'hsl(var(--chart-1))',
+        'l-chart-2': 'hsl(var(--chart-2))',
+        'l-chart-3': 'hsl(var(--chart-3))',
+        'l-chart-4': 'hsl(var(--chart-4))',
+        'l-chart-5': 'hsl(var(--chart-5))',
+        'l-accent': 'hsl(var(--accent))',
+      },
       borderRadius: {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 2px)',

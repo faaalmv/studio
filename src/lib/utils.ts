@@ -8,6 +8,18 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+export function getGroupColorClass(group: string, type: 'border' | 'background'): string {
+  const groupColors: { [key: string]: { border: string, background: string } } = {
+    'Fruta':    { border: 'border-l-chart-1', background: 'bg-chart-1/5' },
+    'Verdura':  { border: 'border-l-chart-2', background: 'bg-chart-2/5' },
+    'Proteína': { border: 'border-l-chart-3', background: 'bg-chart-3/5' },
+    'Lácteo':   { border: 'border-l-chart-4', background: 'bg-chart-4/5' },
+    'Granos':   { border: 'border-l-chart-5', background: 'bg-chart-5/5' },
+    'Snacks':   { border: 'border-l-accent', background: 'bg-accent/5' },
+  };
+  return groupColors[group]?.[type] || '';
+}
+
 export function exportToCsv(items: Item[], schedule: Schedule, totals: Totals, viewMode: ViewMode) {
   let csvContent = "data:text/csv;charset=utf-8,";
   
