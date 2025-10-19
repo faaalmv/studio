@@ -91,11 +91,12 @@ export default {
         'accordion-up': 'accordion-up 0.2s ease-out',
       },
       spacing: {
+        '28': '7rem',
         '60': '15rem',
         '96': '24rem',
-        '[22rem]': '22rem',
-        '[28rem]': '28rem',
-        '[34rem]': '34rem',
+        '[21rem]': '21rem',
+        '[27rem]': '27rem',
+        '[33rem]': '33rem',
       }
     },
   },
