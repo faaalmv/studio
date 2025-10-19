@@ -49,7 +49,7 @@ const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals
     });
 
     const total = totals[item.id].total;
-    const rowClasses = "group row-transition animate-slide-down-fade-in bg-card hover:z-20";
+    const rowClasses = "group row-transition animate-slide-down-fade-in bg-card hover:z-10";
 
     return (
         <TableRow className={cn(rowClasses, className)} style={style}>
@@ -182,7 +182,7 @@ export function SchedulerTable({
                             <TableHead 
                                 key={day} 
                                 colSpan={viewMode === 'detailed' ? 3 : 1} 
-                                className={cn(headerCellStyles, "w-24 border-b border-l top-0 sticky transition-colors duration-200", hoveredColumn === day && "bg-primary/5")}
+                                className={cn(headerCellStyles, "w-24 border-b border-l top-0 sticky z-20 transition-colors duration-200", hoveredColumn === day && "bg-primary/5")}
                                 onMouseEnter={() => handleColumnHover(day)}
                                 onMouseLeave={() => handleColumnHover(null)}
                             >
@@ -199,9 +199,9 @@ export function SchedulerTable({
                             <TableHead className={cn(headerCellStyles, stickyHeaderBase, "left-[30rem] top-12 z-30", isScrolled && "shadow-lg")}></TableHead>
                             {days.map(day => (
                                 <React.Fragment key={`meals-${day}`}>
-                                    <TableHead className={cn(headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 top-12 sticky border-l transition-colors duration-200", hoveredColumn === day && "bg-primary/5")} onMouseEnter={() => handleColumnHover(day)} onMouseLeave={() => handleColumnHover(null)}>D</TableHead>
-                                    <TableHead className={cn(headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 top-12 sticky border-l transition-colors duration-200", hoveredColumn === day && "bg-primary/5")} onMouseEnter={() => handleColumnHover(day)} onMouseLeave={() => handleColumnHover(null)}>A</TableHead>
-                                    <TableHead className={cn(headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 top-12 sticky border-l transition-colors duration-200", hoveredColumn === day && "bg-primary/5")} onMouseEnter={() => handleColumnHover(day)} onMouseLeave={() => handleColumnHover(null)}>C</TableHead>
+                                    <TableHead className={cn(headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 top-12 sticky z-20 border-l transition-colors duration-200", hoveredColumn === day && "bg-primary/5")} onMouseEnter={() => handleColumnHover(day)} onMouseLeave={() => handleColumnHover(null)}>D</TableHead>
+                                    <TableHead className={cn(headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 top-12 sticky z-20 border-l transition-colors duration-200", hoveredColumn === day && "bg-primary/5")} onMouseEnter={() => handleColumnHover(day)} onMouseLeave={() => handleColumnHover(null)}>A</TableHead>
+                                    <TableHead className={cn(headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 top-12 sticky z-20 border-l transition-colors duration-200", hoveredColumn === day && "bg-primary/5")} onMouseEnter={() => handleColumnHover(day)} onMouseLeave={() => handleColumnHover(null)}>C</TableHead>
                                 </React.Fragment>
                             ))}
                         </TableRow>
@@ -251,5 +251,6 @@ export function SchedulerTable({
         </div>
     );
 }
+
 
     

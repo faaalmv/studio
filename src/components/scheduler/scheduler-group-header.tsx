@@ -77,10 +77,10 @@ export const SchedulerGroupHeader: React.FC<GroupHeaderProps> = ({ group, items,
 
   return (
     <TableRow
-      className={cn("cursor-pointer group hover:z-20 transition-all duration-200 ease-in-out", isExpanded ? 'sticky top-[8.1rem] z-20' : 'z-10')}
+      className={cn("cursor-pointer group hover:z-20", isExpanded && "sticky top-[8.1rem] z-10")}
       onClick={onToggle}
       style={{
-        boxShadow: isExpanded ? '0 4px 12px rgba(0,0,0,0.1)' : 'none'
+        boxShadow: isExpanded && isScrolled ? '0 4px 12px rgba(0,0,0,0.1)' : 'none'
       }}
       aria-expanded={isExpanded}
     >
