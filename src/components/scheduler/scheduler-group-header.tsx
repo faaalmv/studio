@@ -5,7 +5,7 @@ import { TableCell, TableRow } from "@/components/ui/table";
 import { Progress } from "@/components/ui/progress";
 import { ChevronDown } from "lucide-react";
 import type { Group, Item, Totals } from '@/lib/types';
-import { cn, getGroupColorClass } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 
 interface GroupHeaderProps {
   group: Group;
@@ -14,9 +14,10 @@ interface GroupHeaderProps {
   isExpanded: boolean;
   onToggle: () => void;
   colSpan: number;
+  isScrolled: boolean;
 }
 
-export const SchedulerGroupHeader: React.FC<GroupHeaderProps> = ({ group, items, totals, isExpanded, onToggle, colSpan }) => {
+export const SchedulerGroupHeader: React.FC<GroupHeaderProps> = ({ group, items, totals, isExpanded, onToggle, colSpan, isScrolled }) => {
   const summary = useMemo(() => {
     if (!items || items.length === 0) {
       return { itemCount: 0, availablePercent: 100, progressBarClass: 'bg-green-500' };
@@ -45,8 +46,23 @@ export const SchedulerGroupHeader: React.FC<GroupHeaderProps> = ({ group, items,
     };
   }, [items, totals]);
 
-  const groupBg = getGroupColorClass(group.name, 'background');
-  const groupBorder = getGroupColorClass(group.name, 'border');
+  const groupBg = cn({
+    'bg-chart-1/10': group.name === 'Fruta',
+    'bg-chart-2/10': group.name === 'Verdura',
+    'bg-chart-3/10': group.name === 'Proteína',
+    'bg-chart-4/10': group.name === 'Lácteo',
+    'bg-chart-5/10': group.name === 'Granos',
+    'bg-accent/10': group.name === 'Snacks',
+  });
+  
+  const groupBorder = cn({
+    'border-chart-1': group.name === 'Fruta',
+    'border-chart-2': group.name === 'Verdura',
+    'border-chart-3': group.name === 'Proteína',
+    'border-chart-4': group.name === 'Lácteo',
+    'border-chart-5': group.name === 'Granos',
+    'border-accent': group.name === 'Snacks',
+  });
 
   return (
     <TableRow
@@ -57,7 +73,7 @@ export const SchedulerGroupHeader: React.FC<GroupHeaderProps> = ({ group, items,
       }}
       aria-expanded={isExpanded}
     >
-      <TableCell colSpan={colSpan} className={cn("p-0 border-b", groupBg, groupBorder)}>
+      <TableCell colSpan={colSpan} className={cn("p-0 border-b", groupBg, groupBorder, isScrolled && isExpanded && "shadow-lg")}>
         <div className="flex items-center justify-between w-full px-4 py-2">
           <div className="flex items-center gap-4">
             <ChevronDown
