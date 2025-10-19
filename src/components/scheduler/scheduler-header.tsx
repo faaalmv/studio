@@ -2,44 +2,37 @@
 "use client";
 
 import { useId } from 'react';
+import { useScheduler } from "@/lib/hooks/use-scheduler";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { ViewMode } from "@/lib/types";
-import { cn } from "@/lib/utils";
 import { FileDown, Search } from "lucide-react";
 
-interface SchedulerHeaderProps {
-  filter: string;
-  setFilter: (filter: string) => void;
-  viewMode: ViewMode;
-  setViewMode: (mode: ViewMode) => void;
-  onExport: () => void;
-  selectedMonth: string;
-  setSelectedMonth: (month: string) => void;
-  monthOptions: { value: string; label: string }[];
-  selectedService: string;
-  setSelectedService: (service: string) => void;
-  serviceOptions: { value: string; label: string }[];
-  selectedMonthLabel: string;
-}
-
-export function SchedulerHeader({
-  filter,
-  setFilter,
-  viewMode,
-  setViewMode,
-  onExport,
-  selectedMonth,
-  setSelectedMonth,
-  monthOptions,
-  selectedService,
-  setSelectedService,
-  serviceOptions,
-  selectedMonthLabel,
-}: SchedulerHeaderProps) {
+export function SchedulerHeader() {
   const id = useId();
+  const {
+    filters,
+    setFilters,
+    viewMode,
+    setViewMode,
+    onExport,
+    monthOptions,
+    serviceOptions,
+    selectedMonthLabel,
+  } = useScheduler();
+
+  const handleFilterChange = (value: string) => {
+    setFilters({ ...filters, search: value });
+  };
+
+  const handleMonthChange = (value: string) => {
+    setFilters({ ...filters, month: value });
+  };
+
+  const handleServiceChange = (value: string) => {
+    setFilters({ ...filters, service: value });
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -49,14 +42,14 @@ export function SchedulerHeader({
                 Programación Mensual
               </h1>
               <p className="text-primary mt-1 text-lg font-bold uppercase tracking-wider">
-                {selectedMonthLabel} - {selectedService}
+                {selectedMonthLabel} - {filters.service}
               </p>
             </div>
             
             <div className="flex flex-col sm:flex-row sm:items-end gap-4 w-full sm:w-auto">
               <div className="w-full sm:w-48">
                 <label htmlFor={`${id}-month-select`} className="block text-sm font-medium text-muted-foreground">Mes</label>
-                <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+                <Select value={filters.month} onValueChange={handleMonthChange}>
                     <SelectTrigger id={`${id}-month-select`} className="mt-1 glass-select-button">
                         <SelectValue placeholder="Seleccionar Mes" />
                     </SelectTrigger>
@@ -71,7 +64,7 @@ export function SchedulerHeader({
               </div>
               <div className="w-full sm:w-48">
                  <label htmlFor={`${id}-service-select`} className="block text-sm font-medium text-muted-foreground">Servicio</label>
-                <Select value={selectedService} onValueChange={setSelectedService}>
+                <Select value={filters.service} onValueChange={handleServiceChange}>
                     <SelectTrigger id={`${id}-service-select`} className="mt-1 glass-select-button">
                         <SelectValue placeholder="Seleccionar Servicio" />
                     </SelectTrigger>
@@ -95,13 +88,13 @@ export function SchedulerHeader({
                 <Input
                   id={`${id}-filter-input`}
                   placeholder="Filtrar por código, descripción o grupo..."
-                  value={filter}
-                  onChange={(e) => setFilter(e.target.value)}
+                  value={filters.search}
+                  onChange={(e) => handleFilterChange(e.target.value)}
                   className="pl-10 bg-background/50"
                 />
             </div>
             <div className="flex items-center gap-4">
-                <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as ViewMode)}>
+                <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as 'general' | 'detailed')}>
                     <TabsList>
                         <TabsTrigger value="general">General</TabsTrigger>
                         <TabsTrigger value="detailed">Detallado</TabsTrigger>
