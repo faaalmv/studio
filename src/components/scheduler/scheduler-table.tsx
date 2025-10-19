@@ -31,29 +31,29 @@ export function SchedulerTable({
       <Table className="min-w-max border-separate border-spacing-0">
         <TableHeader className="sticky top-0 z-20">
           <TableRow className="hover:bg-transparent">
-            <TableHead className={cn(stickyHeaderClass, headerCellStyles, "left-0 w-60 z-30 border-b border-r text-left bg-muted/50")}>Elemento</TableHead>
-            <TableHead className={cn(stickyHeaderClass, headerCellStyles, "left-60 w-28 z-30 border-b border-r bg-muted/50")}>Código</TableHead>
-            <TableHead className={cn(stickyHeaderClass, headerCellStyles, "left-[22rem] w-24 z-30 border-b border-r bg-muted/50")}>Total</TableHead>
-            <TableHead className={cn(stickyHeaderClass, headerCellStyles, "left-[28rem] w-24 z-30 border-b border-r bg-muted/50")}>Rest.</TableHead>
-            <TableHead className={cn(stickyHeaderClass, headerCellStyles, "left-[34rem] w-24 z-30 border-b bg-muted/50")}>Estado</TableHead>
+            <TableHead className={cn(stickyHeaderClass, headerCellStyles, "left-0 w-60 z-30 border-b border-r text-left")}>Elemento</TableHead>
+            <TableHead className={cn(stickyHeaderClass, headerCellStyles, "left-60 w-28 z-30 border-b border-r")}>Código</TableHead>
+            <TableHead className={cn(stickyHeaderClass, headerCellStyles, "left-[22rem] w-24 z-30 border-b border-r")}>Total</TableHead>
+            <TableHead className={cn(stickyHeaderClass, headerCellStyles, "left-[28rem] w-24 z-30 border-b border-r")}>Rest.</TableHead>
+            <TableHead className={cn(stickyHeaderClass, headerCellStyles, "left-[34rem] w-24 z-30 border-b")}>Estado</TableHead>
             {days.map(day => (
-              <TableHead key={day} colSpan={viewMode === 'detailed' ? 3 : 1} className={cn(stickyHeaderClass, headerCellStyles, "w-24 border-b border-l bg-muted/30")}>
+              <TableHead key={day} colSpan={viewMode === 'detailed' ? 3 : 1} className={cn(stickyHeaderClass, headerCellStyles, "w-24 border-b border-l")}>
                 {day}
               </TableHead>
             ))}
           </TableRow>
           {viewMode === 'detailed' && (
              <TableRow className="hover:bg-transparent sticky z-20 top-12">
-                <TableHead className={cn(stickyHeaderClass, "left-0 top-12 z-30 border-r bg-muted/50", headerCellStyles)}></TableHead>
-                <TableHead className={cn(stickyHeaderClass, "left-60 top-12 z-30 border-r bg-muted/50", headerCellStyles)}></TableHead>
-                <TableHead className={cn(stickyHeaderClass, "left-[22rem] top-12 z-30 border-r bg-muted/50", headerCellStyles)}></TableHead>
-                <TableHead className={cn(stickyHeaderClass, "left-[28rem] top-12 z-30 border-r bg-muted/50", headerCellStyles)}></TableHead>
-                <TableHead className={cn(stickyHeaderClass, "left-[34rem] top-12 z-30 bg-muted/50", headerCellStyles)}></TableHead>
+                <TableHead className={cn(stickyHeaderClass, "left-0 top-12 z-30 border-r", headerCellStyles)}></TableHead>
+                <TableHead className={cn(stickyHeaderClass, "left-60 top-12 z-30 border-r", headerCellStyles)}></TableHead>
+                <TableHead className={cn(stickyHeaderClass, "left-[22rem] top-12 z-30 border-r", headerCellStyles)}></TableHead>
+                <TableHead className={cn(stickyHeaderClass, "left-[28rem] top-12 z-30 border-r", headerCellStyles)}></TableHead>
+                <TableHead className={cn(stickyHeaderClass, "left-[34rem] top-12 z-30", headerCellStyles)}></TableHead>
                 {days.map(day => (
                     <React.Fragment key={`meals-${day}`}>
-                        <TableHead className={cn(stickyHeaderClass, headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 top-12 border-l bg-muted/30")}>D</TableHead>
-                        <TableHead className={cn(stickyHeaderClass, headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 top-12 border-l bg-muted/30")}>A</TableHead>
-                        <TableHead className={cn(stickyHeaderClass, headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 top-12 border-l bg-muted/30")}>C</TableHead>
+                        <TableHead className={cn(stickyHeaderClass, headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 top-12 border-l")}>D</TableHead>
+                        <TableHead className={cn(stickyHeaderClass, headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 top-12 border-l")}>A</TableHead>
+                        <TableHead className={cn(stickyHeaderClass, headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 top-12 border-l")}>C</TableHead>
                     </React.Fragment>
                 ))}
              </TableRow>
