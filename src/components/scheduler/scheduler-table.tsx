@@ -52,7 +52,7 @@ StickyTableCell.displayName = 'StickyTableCell';
  * @param {object} props - The component props.
  * @returns {JSX.Element} The rendered table row.
  */
-const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals, viewMode, days, updateQuantity, getDailyTotal, isLast, style, className, isScrolled, hoveredColumn }: { item: any, isLast: boolean, style: React.CSSProperties, className: string, isScrolled: boolean, hoveredColumn: number | null } & Omit<SchedulerTableProps, 'items' | 'groups'>) {
+const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals, viewMode, days, updateQuantity, getDailyTotal, errors, clearError, isLast, style, className, isScrolled, hoveredColumn }: { item: any, isLast: boolean, style: React.CSSProperties, className: string, isScrolled: boolean, hoveredColumn: number | null } & Omit<SchedulerTableProps, 'items' | 'groups'>) {
     const id = useId();
     const cellStyles = "p-0 h-14 transition-colors duration-200";
     
@@ -137,6 +137,8 @@ const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals
                             const borderClass = meal === 'cena' ? 'border-r-slate-300' : 'border-r-dotted border-r-slate-200';
                             const backgroundClass = (day - 1) % 2 === 0 ? 'bg-slate-50/50' : 'bg-card';
                             const mealStepperId = `${id}-stepper-${day}-${meal}`;
+                            const errorKey = `${item.id}-${day}-${meal}`;
+                            const isError = errors[errorKey];
 
                             return (
                                 <TableCell 
@@ -149,6 +151,8 @@ const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals
                                         value={mealValue}
                                         onValueChange={onDetailedValueChange(day, meal)}
                                         max={item.totalPossible}
+                                        isError={isError}
+                                        onClearError={() => clearError(errorKey)}
                                     />
                                 </TableCell>
                             );
@@ -173,7 +177,9 @@ export function SchedulerTable({
     viewMode,
     days,
     updateQuantity,
-    getDailyTotal
+    getDailyTotal,
+    errors,
+    clearError,
 }: SchedulerTableProps) {
     const { expandedItems, toggleItem } = useCollapsible(initialGroups.map(g => g.name));
     const [isScrolled, setIsScrolled] = useState(false);
@@ -306,6 +312,8 @@ export function SchedulerTable({
                     days={days}
                     updateQuantity={updateQuantity}
                     getDailyTotal={getDailyTotal}
+                    errors={errors}
+                    clearError={clearError}
                     isLast={false}
                     style={{...commonStyle, animationDelay: `${virtualItem.index * 30}ms` }}
                     className=""
