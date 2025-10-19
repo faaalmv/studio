@@ -26,7 +26,7 @@ export function SchedulerHeader({
       <div className="relative w-full sm:w-auto sm:flex-grow">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="Filter by description, code, or group..."
+          placeholder="Filtrar por descripción, código o grupo..."
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           className="pl-10"
@@ -36,12 +36,12 @@ export function SchedulerHeader({
         <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as ViewMode)}>
           <TabsList>
             <TabsTrigger value="general">General</TabsTrigger>
-            <TabsTrigger value="detailed">Detailed</TabsTrigger>
+            <TabsTrigger value="detailed">Detallado</TabsTrigger>
           </TabsList>
         </Tabs>
         <Button onClick={onExport} variant="outline">
           <FileDown className="mr-2 h-4 w-4" />
-          Export
+          Exportar
         </Button>
       </div>
     </div>

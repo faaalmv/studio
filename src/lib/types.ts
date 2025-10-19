@@ -1,6 +1,6 @@
-export type Meal = 'breakfast' | 'lunch' | 'dinner';
+export type Meal = 'desayuno' | 'almuerzo' | 'cena';
 
-export const MEALS: Meal[] = ['breakfast', 'lunch', 'dinner'];
+export const MEALS: Meal[] = ['desayuno', 'almuerzo', 'cena'];
 
 export const DAYS_IN_MONTH = 31;
 

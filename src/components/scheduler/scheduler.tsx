@@ -11,7 +11,7 @@ export default function Scheduler() {
   return (
     <Card className="w-full overflow-hidden shadow-lg">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold text-primary">Monthly Scheduler</CardTitle>
+        <CardTitle className="text-2xl font-bold text-primary-foreground">Planificador Mensual</CardTitle>
         <SchedulerHeader
           filter={scheduler.filter}
           setFilter={scheduler.setFilter}

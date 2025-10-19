@@ -11,14 +11,14 @@ export function cn(...inputs: ClassValue[]) {
 export function exportToCsv(items: Item[], schedule: Schedule, totals: Totals, viewMode: ViewMode) {
   let csvContent = "data:text/csv;charset=utf-8,";
   
-  const headers = ['Description', 'Code', 'Group', 'Total Scheduled', 'Total Remaining'];
+  const headers = ['Descripción', 'Código', 'Grupo', 'Total Planificado', 'Total Restante'];
   const days = Array.from({ length: DAYS_IN_MONTH }, (_, i) => i + 1);
 
   if (viewMode === 'general') {
-    days.forEach(day => headers.push(`Day ${day}`));
+    days.forEach(day => headers.push(`Día ${day}`));
   } else {
     days.forEach(day => {
-      MEALS.forEach(meal => headers.push(`Day ${day} ${meal.charAt(0).toUpperCase() + meal.slice(1)}`));
+      MEALS.forEach(meal => headers.push(`Día ${day} ${meal.charAt(0).toUpperCase() + meal.slice(1)}`));
     });
   }
   csvContent += headers.join(',') + '\r\n';
@@ -48,7 +48,7 @@ export function exportToCsv(items: Item[], schedule: Schedule, totals: Totals, v
   const encodedUri = encodeURI(csvContent);
   const link = document.createElement("a");
   link.setAttribute("href", encodedUri);
-  const fileName = `monthly-schedule-${viewMode}-${new Date().toISOString().slice(0, 10)}.csv`;
+  const fileName = `plan-mensual-${viewMode}-${new Date().toISOString().slice(0, 10)}.csv`;
   link.setAttribute("download", fileName);
   document.body.appendChild(link);
   link.click();

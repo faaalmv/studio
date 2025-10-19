@@ -13,9 +13,9 @@ const transformInitialData = (items: Item[]): Schedule => {
     schedule[item.id] = {};
     for (let day = 1; day <= DAYS_IN_MONTH; day++) {
       schedule[item.id][day] = {
-        breakfast: 0,
-        lunch: 0,
-        dinner: 0,
+        desayuno: 0,
+        almuerzo: 0,
+        cena: 0,
       };
     }
   });
@@ -71,8 +71,8 @@ export const useScheduler = () => {
 
       if (otherMealsTotal + newQuantity > item.maxDaily) {
         toast({
-          title: "Daily Limit Exceeded",
-          description: `You can only schedule up to ${item.maxDaily} units of ${item.description} per day.`,
+          title: "Límite Diario Excedido",
+          description: `Solo puedes planificar hasta ${item.maxDaily} unidades de ${item.description} por día.`,
           variant: "destructive",
         });
         return;
@@ -89,8 +89,8 @@ export const useScheduler = () => {
   const handleExport = useCallback(() => {
     exportToCsv(filteredItems, schedule, totals, viewMode);
     toast({
-      title: "Export Successful",
-      description: "Your schedule has been exported to CSV.",
+      title: "Exportación Exitosa",
+      description: "Tu planificación ha sido exportada a CSV.",
     });
   }, [filteredItems, schedule, totals, viewMode, toast]);
 
