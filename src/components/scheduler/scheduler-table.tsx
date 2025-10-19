@@ -22,55 +22,56 @@ export function SchedulerTable({
 }: SchedulerTableProps) {
 
   const cellStyles = "p-0 h-14";
-  const headerCellStyles = "p-2 align-middle text-sm font-semibold";
-  const stickyHeaderClass = "sticky z-10 top-0 bg-card/95 backdrop-blur-sm";
+  const headerCellStyles = "p-2 align-middle text-sm font-semibold text-center";
+  const stickyHeaderClass = "sticky z-10 top-0 bg-card/95 backdrop-blur-sm shadow-sm";
   const stickyCellClass = "sticky bg-card/95 backdrop-blur-sm z-[1]";
   
   return (
+    <div className="relative h-full overflow-auto border-t">
       <Table className="min-w-max border-separate border-spacing-0">
-        <TableHeader className="sticky top-0 z-20 bg-card/95 backdrop-blur-sm">
-          <TableRow className="hover:bg-transparent shadow-sm">
-            <TableHead className={cn(stickyHeaderClass, headerCellStyles, "left-0 w-60 z-30 border-b border-r text-left bg-muted/30")}>Elemento</TableHead>
-            <TableHead className={cn(stickyHeaderClass, headerCellStyles, "left-60 w-28 z-30 border-b border-r bg-muted/30")}>Código</TableHead>
-            <TableHead className={cn(stickyHeaderClass, headerCellStyles, "left-[22rem] w-24 text-center z-30 border-b border-r bg-muted/30")}>Total</TableHead>
-            <TableHead className={cn(stickyHeaderClass, headerCellStyles, "left-[28rem] w-24 text-center z-30 border-b border-r bg-muted/30")}>Rest.</TableHead>
-            <TableHead className={cn(stickyHeaderClass, headerCellStyles, "left-[34rem] w-24 text-center z-30 border-b bg-muted/30")}>Estado</TableHead>
+        <TableHeader className="sticky top-0 z-20">
+          <TableRow className="hover:bg-transparent">
+            <TableHead className={cn(stickyHeaderClass, headerCellStyles, "left-0 w-60 z-30 border-b border-r text-left bg-muted/50")}>Elemento</TableHead>
+            <TableHead className={cn(stickyHeaderClass, headerCellStyles, "left-60 w-28 z-30 border-b border-r bg-muted/50")}>Código</TableHead>
+            <TableHead className={cn(stickyHeaderClass, headerCellStyles, "left-[22rem] w-24 z-30 border-b border-r bg-muted/50")}>Total</TableHead>
+            <TableHead className={cn(stickyHeaderClass, headerCellStyles, "left-[28rem] w-24 z-30 border-b border-r bg-muted/50")}>Rest.</TableHead>
+            <TableHead className={cn(stickyHeaderClass, headerCellStyles, "left-[34rem] w-24 z-30 border-b bg-muted/50")}>Estado</TableHead>
             {days.map(day => (
-              <TableHead key={day} colSpan={viewMode === 'detailed' ? 3 : 1} className={cn(stickyHeaderClass, headerCellStyles, "text-center w-24 border-b border-l")}>
+              <TableHead key={day} colSpan={viewMode === 'detailed' ? 3 : 1} className={cn(stickyHeaderClass, headerCellStyles, "w-24 border-b border-l bg-muted/30")}>
                 {day}
               </TableHead>
             ))}
           </TableRow>
           {viewMode === 'detailed' && (
-             <TableRow className="hover:bg-transparent sticky z-20 top-14 bg-card/95 backdrop-blur-sm">
-                <TableHead className={cn(stickyHeaderClass, "left-0 top-14 z-30 border-r bg-muted/30", headerCellStyles)}></TableHead>
-                <TableHead className={cn(stickyHeaderClass, "left-60 top-14 z-30 border-r bg-muted/30", headerCellStyles)}></TableHead>
-                <TableHead className={cn(stickyHeaderClass, "left-[22rem] top-14 z-30 border-r bg-muted/30", headerCellStyles)}></TableHead>
-                <TableHead className={cn(stickyHeaderClass, "left-[28rem] top-14 z-30 border-r bg-muted/30", headerCellStyles)}></TableHead>
-                <TableHead className={cn(stickyHeaderClass, "left-[34rem] top-14 z-30 bg-muted/30", headerCellStyles)}></TableHead>
+             <TableRow className="hover:bg-transparent sticky z-20 top-12">
+                <TableHead className={cn(stickyHeaderClass, "left-0 top-12 z-30 border-r bg-muted/50", headerCellStyles)}></TableHead>
+                <TableHead className={cn(stickyHeaderClass, "left-60 top-12 z-30 border-r bg-muted/50", headerCellStyles)}></TableHead>
+                <TableHead className={cn(stickyHeaderClass, "left-[22rem] top-12 z-30 border-r bg-muted/50", headerCellStyles)}></TableHead>
+                <TableHead className={cn(stickyHeaderClass, "left-[28rem] top-12 z-30 border-r bg-muted/50", headerCellStyles)}></TableHead>
+                <TableHead className={cn(stickyHeaderClass, "left-[34rem] top-12 z-30 bg-muted/50", headerCellStyles)}></TableHead>
                 {days.map(day => (
                     <React.Fragment key={`meals-${day}`}>
-                        <TableHead className={cn(stickyHeaderClass, headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 top-14 border-l")}>D</TableHead>
-                        <TableHead className={cn(stickyHeaderClass, headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 top-14 border-l")}>A</TableHead>
-                        <TableHead className={cn(stickyHeaderClass, headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 top-14 border-l")}>C</TableHead>
+                        <TableHead className={cn(stickyHeaderClass, headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 top-12 border-l bg-muted/30")}>D</TableHead>
+                        <TableHead className={cn(stickyHeaderClass, headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 top-12 border-l bg-muted/30")}>A</TableHead>
+                        <TableHead className={cn(stickyHeaderClass, headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 top-12 border-l bg-muted/30")}>C</TableHead>
                     </React.Fragment>
                 ))}
              </TableRow>
           )}
         </TableHeader>
         <TableBody>
-          {items.map((item, index) => (
+          {items.map((item) => (
             <TableRow key={item.id} className={cn("transition-colors hover:bg-muted/50", getGroupColorClass(item.group, 'background'))}>
-              <TableCell className={cn(stickyCellClass, cellStyles, "left-0 w-60 z-20 align-top border-b border-l-4", getGroupColorClass(item.group, 'border'))}>
+              <TableCell className={cn(stickyCellClass, cellStyles, "left-0 w-60 z-20 align-top border-b border-r", getGroupColorClass(item.group, 'border'), "border-l-4")}>
                 <div className="font-medium p-2">{item.description}</div>
                 <div className="text-xs text-muted-foreground px-2 pb-1">{item.group}</div>
               </TableCell>
-              <TableCell className={cn(stickyCellClass, cellStyles, "left-60 w-28 z-20 text-center align-middle border-b border-l")}>
+              <TableCell className={cn(stickyCellClass, cellStyles, "left-60 w-28 z-20 text-center align-middle border-b border-r")}>
                   <Badge variant="secondary" className="font-mono">{item.code}</Badge>
               </TableCell>
-              <TableCell className={cn(stickyCellClass, cellStyles, "text-center left-[22rem] w-24 font-mono z-20 align-middle text-lg border-b border-l")}>{totals[item.id].total}</TableCell>
-              <TableCell className={cn(stickyCellClass, cellStyles, "text-center left-[28rem] w-24 font-mono z-20 align-middle text-lg border-b border-l", totals[item.id].isOverLimit ? "text-destructive" : "text-muted-foreground")}>{totals[item.id].remaining}</TableCell>
-              <TableCell className={cn(stickyCellClass, cellStyles, "text-center left-[34rem] w-24 z-20 align-middle border-b border-l")}>
+              <TableCell className={cn(stickyCellClass, cellStyles, "text-center left-[22rem] w-24 font-mono z-20 align-middle text-lg border-b border-r")}>{totals[item.id].total}</TableCell>
+              <TableCell className={cn(stickyCellClass, cellStyles, "text-center left-[28rem] w-24 font-mono z-20 align-middle text-lg border-b border-r", totals[item.id].isOverLimit ? "text-destructive" : "text-muted-foreground")}>{totals[item.id].remaining}</TableCell>
+              <TableCell className={cn(stickyCellClass, cellStyles, "text-center left-[34rem] w-24 z-20 align-middle border-b")}>
                 {totals[item.id].isOverLimit ? (
                   <AlertTriangle className="h-5 w-5 text-destructive mx-auto" />
                 ) : (
@@ -112,5 +113,6 @@ export function SchedulerTable({
           ))}
         </TableBody>
       </Table>
+    </div>
   );
 }
