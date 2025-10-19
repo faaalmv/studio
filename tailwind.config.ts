@@ -100,6 +100,8 @@ export default {
       },
       spacing: {
         '28': '7rem',
+        '36': '9rem',
+        '48': '12rem',
         '60': '15rem',
         '96': '24rem',
         '[14rem]': '14rem',
@@ -107,6 +109,7 @@ export default {
         '[22rem]': '22rem',
         '[26rem]': '26rem',
         '[28rem]': '28rem',
+        '[32rem]': '32rem',
         '[34rem]': '34rem',
       }
     },
@@ -121,6 +124,16 @@ export default {
     'bg-amber-400',
     'bg-orange-500',
     'bg-rose-500',
+    'bg-green-500/10',
+    'bg-sky-500/10',
+    'bg-amber-400/10',
+    'bg-orange-500/10',
+    'bg-rose-500/10',
+    'text-green-700',
+    'text-sky-700',
+    'text-amber-700',
+    'text-orange-700',
+    'text-rose-700',
   ],
   plugins: [require('tailwindcss-animate')],
 } satisfies Config;

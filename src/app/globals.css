@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 180 10% 97%;
     --foreground: 224 71.4% 4.1%;
 
     --card: 0 0% 100%;
@@ -13,7 +13,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 224 71.4% 4.1%;
 
-    --primary: 217 91% 60%;
+    --primary: 174 41% 56%;
     --primary-foreground: 0 0% 98%;
 
     --secondary: 220 13% 91%;
@@ -22,7 +22,7 @@
     --muted: 220 15% 96.1%;
     --muted-foreground: 220 8.9% 46.1%;
 
-    --accent: 173 95% 42%;
+    --accent: 42 86% 62%;
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 84.2% 60.2%;
@@ -30,7 +30,7 @@
 
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 217 91% 60%;
+    --ring: 174 41% 56%;
 
     --radius: 0.75rem;
 
@@ -48,19 +48,19 @@
     --card-foreground: 215 15% 95%;
     --popover: 225 15% 15%;
     --popover-foreground: 215 15% 95%;
-    --primary: 217 91% 60%;
+    --primary: 174 41% 56%;
     --primary-foreground: 0 0% 98%;
     --secondary: 220 13% 25%;
     --secondary-foreground: 0 0% 98%;
     --muted: 220 13% 25%;
     --muted-foreground: 215 15% 65%;
-    --accent: 173 95% 42%;
+    --accent: 42 86% 62%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
     --border: 220 13% 30%;
     --input: 220 13% 25%;
-    --ring: 217 91% 60%;
+    --ring: 174 41% 56%;
     --chart-1: 173 95% 42%;
     --chart-2: 120 40% 65%;
     --chart-3: 39 97% 62%;
@@ -94,5 +94,10 @@
   .glass-select-menu {
     @apply bg-white/70 backdrop-blur-sm;
     @apply dark:bg-black/50;
+  }
+
+  .row-transition {
+    @apply transition-all duration-200 ease-in-out;
+    @apply hover:scale-[1.01] focus-within:scale-[1.01] hover:-translate-y-px focus-within:-translate-y-px hover:shadow-lg focus-within:shadow-lg;
   }
 }
