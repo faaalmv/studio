@@ -9,7 +9,7 @@ export default function Scheduler() {
   const scheduler = useScheduler();
 
   return (
-    <Card className="w-full overflow-hidden shadow-lg">
+    <Card className="w-full overflow-hidden shadow-lg h-[calc(100vh-2rem)] flex flex-col">
       <CardHeader>
         <CardTitle className="text-2xl font-bold text-primary-foreground">Planificador Mensual</CardTitle>
         <SchedulerHeader
@@ -20,8 +20,8 @@ export default function Scheduler() {
           onExport={scheduler.handleExport}
         />
       </CardHeader>
-      <CardContent className="p-0">
-        <div className="overflow-x-auto">
+      <CardContent className="p-0 flex-grow relative">
+        <div className="absolute inset-0">
             <SchedulerTable {...scheduler} />
         </div>
       </CardContent>
