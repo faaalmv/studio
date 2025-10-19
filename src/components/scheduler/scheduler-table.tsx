@@ -76,6 +76,11 @@ const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals
             {days.map(day => {
                 const dailyTotal = getDailyTotal(item.id, day);
                 const isHovered = hoveredColumn === day;
+                
+                const isDayFocused = hoveredColumn === day;
+                const isFocusContainerActive = hoveredColumn !== null;
+                const opacityClass = isFocusContainerActive && !isDayFocused ? 'opacity-40' : 'opacity-100';
+
 
                 if (viewMode === 'general') {
                     return (
@@ -93,12 +98,31 @@ const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals
                         </TableCell>
                     );
                 }
+
+                const isEvenDay = (day - 1) % 2 === 0;
+
                 return (
                     <React.Fragment key={`${item.id}-${day}-detailed`}>
                         {MEALS.map((meal, mealIndex) => {
                             const mealValue = schedule[item.id]?.[day]?.[meal] ?? 0;
+                            const borderClass = mealIndex === 2 ? 'border-r-slate-300' : 'border-r-dotted border-r-slate-200';
+                            const backgroundClass = isEvenDay ? 'bg-slate-50/50' : 'bg-card';
+
                             return (
-                                <TableCell key={`${item.id}-${day}-${meal}`} className={cn("w-12 align-middle border-l", cellStyles, isHovered && "bg-primary/5", (mealValue > 0 && !isHovered) && 'bg-primary/5', "shadow-[inset_0_-1px_0_0_hsl(var(--border))]")}>
+                                <TableCell 
+                                    key={`${item.id}-${day}-${meal}`} 
+                                    className={cn(
+                                        "w-12 align-middle border-l", 
+                                        cellStyles,
+                                        borderClass,
+                                        backgroundClass,
+                                        isHovered && "bg-primary/5",
+                                        (mealValue > 0 && !isHovered) && 'bg-primary/5',
+                                        "shadow-[inset_0_-1px_0_0_hsl(var(--border))]",
+                                        "transition-opacity duration-300",
+                                        opacityClass
+                                    )}
+                                >
                                     <QuantityStepper
                                         value={mealValue}
                                         onValueChange={(newValue) => updateQuantity(item.id, day, meal, newValue)}
@@ -140,6 +164,10 @@ export function SchedulerTable({
     const headerCellStyles = "p-2 align-middle text-sm font-semibold text-center bg-card shadow-inner-white";
     const stickyHeaderBase = "sticky z-20 bg-card";
     
+    const handleColumnHover = (day: number | null) => {
+        setHoveredColumn(day);
+    };
+
     return (
         <div ref={scrollContainerRef} onScroll={handleScroll} className="h-full w-full overflow-auto">
             <Table className="min-w-max border-separate border-spacing-0">
@@ -155,8 +183,8 @@ export function SchedulerTable({
                                 key={day} 
                                 colSpan={viewMode === 'detailed' ? 3 : 1} 
                                 className={cn(headerCellStyles, "w-24 border-b border-l top-0 sticky transition-colors duration-200", hoveredColumn === day && "bg-primary/5")}
-                                onMouseEnter={() => setHoveredColumn(day)}
-                                onMouseLeave={() => setHoveredColumn(null)}
+                                onMouseEnter={() => handleColumnHover(day)}
+                                onMouseLeave={() => handleColumnHover(null)}
                             >
                                 {day}
                             </TableHead>
@@ -171,9 +199,9 @@ export function SchedulerTable({
                             <TableHead className={cn(headerCellStyles, stickyHeaderBase, "left-[30rem] top-12 z-30", isScrolled && "shadow-lg")}></TableHead>
                             {days.map(day => (
                                 <React.Fragment key={`meals-${day}`}>
-                                    <TableHead className={cn(headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 top-12 sticky border-l transition-colors duration-200", hoveredColumn === day && "bg-primary/5")} onMouseEnter={() => setHoveredColumn(day)} onMouseLeave={() => setHoveredColumn(null)}>D</TableHead>
-                                    <TableHead className={cn(headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 top-12 sticky border-l transition-colors duration-200", hoveredColumn === day && "bg-primary/5")} onMouseEnter={() => setHoveredColumn(day)} onMouseLeave={() => setHoveredColumn(null)}>A</TableHead>
-                                    <TableHead className={cn(headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 top-12 sticky border-l transition-colors duration-200", hoveredColumn === day && "bg-primary/5")} onMouseEnter={() => setHoveredColumn(day)} onMouseLeave={() => setHoveredColumn(null)}>C</TableHead>
+                                    <TableHead className={cn(headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 top-12 sticky border-l transition-colors duration-200", hoveredColumn === day && "bg-primary/5")} onMouseEnter={() => handleColumnHover(day)} onMouseLeave={() => handleColumnHover(null)}>D</TableHead>
+                                    <TableHead className={cn(headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 top-12 sticky border-l transition-colors duration-200", hoveredColumn === day && "bg-primary/5")} onMouseEnter={() => handleColumnHover(day)} onMouseLeave={() => handleColumnHover(null)}>A</TableHead>
+                                    <TableHead className={cn(headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 top-12 sticky border-l transition-colors duration-200", hoveredColumn === day && "bg-primary/5")} onMouseEnter={() => handleColumnHover(day)} onMouseLeave={() => handleColumnHover(null)}>C</TableHead>
                                 </React.Fragment>
                             ))}
                         </TableRow>
@@ -223,3 +251,5 @@ export function SchedulerTable({
         </div>
     );
 }
+
+    
