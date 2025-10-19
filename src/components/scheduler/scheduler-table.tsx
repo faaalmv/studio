@@ -66,16 +66,16 @@ export function SchedulerTable({
 
             return (
               <TableRow key={item.id} className={cn("transition-colors hover:bg-muted/50")}>
-                <TableCell className={cn(stickyCellClass, cellStyles, groupBg, groupBorder, "left-0 w-60 z-20 align-top border-b border-r border-l-4")}>
+                <TableCell className={cn(stickyCellClass, cellStyles, groupBg, "left-0 w-60 z-20 align-top border-b border-r border-l-4", groupBorder)}>
                   <div className="font-medium p-2">{item.description}</div>
                   <div className="text-xs text-muted-foreground px-2 pb-1">{item.group}</div>
                 </TableCell>
-                <TableCell className={cn(stickyCellClass, cellStyles, groupBg, "left-60 w-28 z-20 text-center align-middle border-b border-r")}>
+                <TableCell className={cn(stickyCellClass, cellStyles, groupBg, "left-60 w-28 z-20 text-center align-middle border-b border-r", groupBorder)}>
                     <Badge variant="secondary" className="font-mono">{item.code}</Badge>
                 </TableCell>
-                <TableCell className={cn(stickyCellClass, cellStyles, groupBg, "text-center left-[22rem] w-24 font-mono z-20 align-middle text-lg border-b border-r")}>{totals[item.id].total}</TableCell>
-                <TableCell className={cn(stickyCellClass, cellStyles, groupBg, "text-center left-[28rem] w-24 font-mono z-20 align-middle text-lg border-b border-r", totals[item.id].isOverLimit ? "text-destructive" : "text-muted-foreground")}>{totals[item.id].remaining}</TableCell>
-                <TableCell className={cn(stickyCellClass, cellStyles, groupBg, "text-center left-[34rem] w-24 z-20 align-middle border-b")}>
+                <TableCell className={cn(stickyCellClass, cellStyles, groupBg, "text-center left-[22rem] w-24 font-mono z-20 align-middle text-lg border-b border-r", groupBorder)}>{totals[item.id].total}</TableCell>
+                <TableCell className={cn(stickyCellClass, cellStyles, groupBg, "text-center left-[28rem] w-24 font-mono z-20 align-middle text-lg border-b border-r", totals[item.id].isOverLimit ? "text-destructive" : "text-muted-foreground", groupBorder)}>{totals[item.id].remaining}</TableCell>
+                <TableCell className={cn(stickyCellClass, cellStyles, groupBg, "text-center left-[34rem] w-24 z-20 align-middle border-b", groupBorder)}>
                   {totals[item.id].isOverLimit ? (
                     <AlertTriangle className="h-5 w-5 text-destructive mx-auto" />
                   ) : (
