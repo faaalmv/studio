@@ -106,6 +106,7 @@ export default {
         '48': '12rem',
         '60': '15rem',
         '96': '24rem',
+        '128': '32rem',
         '[14rem]': '14rem',
         '[18rem]': '18rem',
         '[20rem]': '20rem',
@@ -116,6 +117,8 @@ export default {
         '[30rem]': '30rem',
         '[32rem]': '32rem',
         '[34rem]': '34rem',
+        '[36rem]': '36rem',
+        '[42rem]': '42rem',
       }
     },
   },
@@ -154,5 +157,3 @@ export default {
   ],
   plugins: [require('tailwindcss-animate')],
 } satisfies Config;
-
-    
