@@ -1,7 +1,7 @@
 
 "use client";
 
-import React, { memo, useState, useRef, useCallback } from 'react';
+import React, { memo, useState, useRef, useCallback, useMemo } from 'react';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import type { useScheduler } from '@/lib/hooks/use-scheduler';
@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import { SchedulerGroupHeader } from './scheduler-group-header';
 import { useCollapsible } from '@/lib/hooks/use-collapsible';
 import { initialGroups } from '@/lib/data';
+import { useVirtualizer } from '@tanstack/react-virtual';
 
 type SchedulerTableProps = ReturnType<typeof useScheduler>;
 
@@ -36,20 +37,34 @@ const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals
         }
     );
 
-    const remaining = totals[item.id].remaining;
-    const totalPossible = totals[item.id].totalPossible;
-    const percentage = totalPossible > 0 ? (remaining / totalPossible) * 100 : 100;
+    const { remaining, totalPossible, percentage } = useMemo(() => {
+        const remaining = totals[item.id].remaining;
+        const totalPossible = totals[item.id].totalPossible;
+        const percentage = totalPossible > 0 ? (remaining / totalPossible) * 100 : 100;
+        return { remaining, totalPossible, percentage };
+    }, [totals, item.id]);
     
-    const remainingCellBg = cn({
+    const remainingCellBg = useMemo(() => cn({
         'bg-green-500/10 text-green-700': percentage > 75,
         'bg-sky-500/10 text-sky-700': percentage > 50 && percentage <= 75,
         'bg-amber-400/10 text-amber-700': percentage > 25 && percentage <= 50,
         'bg-orange-500/10 text-orange-700': percentage > 0 && percentage <= 25,
         'bg-rose-500/10 text-rose-700': percentage <= 0,
-    });
+    }), [percentage]);
 
     const total = totals[item.id].total;
     const rowClasses = "group row-transition animate-slide-down-fade-in bg-card hover:z-10";
+
+    const onGeneralValueChange = useCallback((newValue) => {
+        const dailyTotal = getDailyTotal(item.id, 1);
+        const diff = newValue - dailyTotal;
+        const currentBreakfast = schedule[item.id]?.[1]?.desayuno ?? 0;
+        updateQuantity(item.id, 1, 'desayuno', currentBreakfast + diff, true);
+    }, [getDailyTotal, item.id, schedule, updateQuantity]);
+
+    const onDetailedValueChange = useCallback((day, meal) => (newValue) => {
+        updateQuantity(item.id, day, meal, newValue)
+    }, [item.id, updateQuantity]);
 
     return (
         <TableRow className={cn(rowClasses, className, "relative")} style={style}>
@@ -89,11 +104,7 @@ const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals
                         <TableCell key={`${item.id}-${day}`} className={cn("text-center w-24 align-middle border-l", cellStyles, isHovered && "bg-primary/5", (dailyTotal > 0 && !isHovered) && 'bg-primary/5', "shadow-[inset_0_-1px_0_0_hsl(var(--border))]")}>
                              <QuantityStepper
                                 value={dailyTotal}
-                                onValueChange={(newValue) => {
-                                    const diff = newValue - dailyTotal;
-                                    const currentBreakfast = schedule[item.id]?.[day]?.desayuno ?? 0;
-                                    updateQuantity(item.id, day, 'desayuno', currentBreakfast + diff, true);
-                                }}
+                                onValueChange={onGeneralValueChange}
                                 max={item.totalPossible}
                                 dailyTotal={dailyTotal}
                             />
@@ -127,7 +138,7 @@ const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals
                                 >
                                     <QuantityStepper
                                         value={mealValue}
-                                        onValueChange={(newValue) => updateQuantity(item.id, day, meal, newValue)}
+                                        onValueChange={onDetailedValueChange(day, meal)}
                                         max={item.totalPossible}
                                         dailyTotal={dailyTotal}
                                     />
@@ -165,17 +176,41 @@ export function SchedulerTable({
 
     const headerCellStyles = "p-2 align-middle text-sm font-semibold text-center bg-card shadow-inner-white";
     
-    const handleColumnHover = (day: number | null) => {
+    const handleColumnHover = useCallback((day: number | null) => {
         setHoveredColumn(day);
-    };
+    }, []);
 
     const headerHeight = viewMode === 'detailed' ? 'top-12' : 'top-0';
     const groupHeaderTop = viewMode === 'detailed' ? 'top-[8rem]' : 'top-[4rem]';
+    
+    const allItems = useMemo(() => {
+        const all = [];
+        for (const group of groups) {
+            const isExpanded = expandedItems.includes(group.name);
+            const groupItems = items.filter(item => item.group === group.name);
+            if (groupItems.length === 0) continue;
+            
+            all.push({ type: 'group', group, groupItems, isExpanded });
+            if (isExpanded) {
+                for (const item of groupItems) {
+                    all.push({ type: 'item', item });
+                }
+            }
+        }
+        return all;
+    }, [groups, items, expandedItems]);
+    
+    const rowVirtualizer = useVirtualizer({
+        count: allItems.length,
+        getScrollElement: () => scrollContainerRef.current,
+        estimateSize: (index) => allItems[index].type === 'group' ? 48 : 56,
+        overscan: 5,
+    });
 
 
     return (
         <div ref={scrollContainerRef} onScroll={handleScroll} className="h-full w-full overflow-auto">
-            <Table className="min-w-max border-separate border-spacing-0">
+            <Table style={{ height: `${rowVirtualizer.getTotalSize()}px`}} className="min-w-max border-separate border-spacing-0 relative">
                 <TableHeader className="sticky top-0 z-30 bg-card">
                     <TableRow className="hover:bg-transparent">
                         <TableHead className={cn(headerCellStyles, "sticky left-0 w-32 z-40 border-b text-left", isScrolled && "shadow-lg")}>Código</TableHead>
@@ -215,17 +250,14 @@ export function SchedulerTable({
                     )}
                 </TableHeader>
                 <TableBody>
-                    {groups.map((group) => {
-                        const isExpanded = expandedItems.includes(group.name);
-                        const groupItems = items.filter(item => item.group === group.name);
-                        
-                        if (groupItems.length === 0) return null;
-
-                        const colSpan = 6 + (viewMode === 'detailed' ? days.length * 3 : days.length);
-
-                        return (
-                            <React.Fragment key={group.name}>
+                    {rowVirtualizer.getVirtualItems().map((virtualItem) => {
+                        const row = allItems[virtualItem.index];
+                        if (row.type === 'group') {
+                            const { group, groupItems, isExpanded } = row;
+                            const colSpan = 6 + (viewMode === 'detailed' ? days.length * 3 : days.length);
+                            return (
                                 <SchedulerGroupHeader
+                                    key={group.name}
                                     group={group}
                                     items={groupItems}
                                     totals={totals}
@@ -233,26 +265,41 @@ export function SchedulerTable({
                                     onToggle={() => toggleItem(group.name)}
                                     colSpan={colSpan}
                                     stickyTopClass={viewMode === 'detailed' ? 'top-[5rem]' : 'top-[2.5rem]'}
+                                    style={{
+                                        transform: `translateY(${virtualItem.start}px)`,
+                                        position: 'absolute',
+                                        top: 0,
+                                        left: 0,
+                                        width: '100%',
+                                    }}
                                 />
-
-                                {isExpanded && groupItems.map((item, index) => (
-                                    <MemoizedTableRow
-                                        key={item.id}
-                                        item={item}
-                                        schedule={schedule}
-                                        totals={totals}
-                                        viewMode={viewMode}
-                                        days={days}
-                                        updateQuantity={updateQuantity}
-                                        getDailyTotal={getDailyTotal}
-                                        isLast={index === groupItems.length - 1}
-                                        style={{ animationDelay: `${index * 30}ms` }}
-                                        className=""
-                                        isScrolled={isScrolled}
-                                        hoveredColumn={hoveredColumn}
-                                    />
-                                ))}
-                            </React.Fragment>
+                            );
+                        }
+                        
+                        const { item } = row;
+                        return (
+                            <MemoizedTableRow
+                                key={item.id}
+                                item={item}
+                                schedule={schedule}
+                                totals={totals}
+                                viewMode={viewMode}
+                                days={days}
+                                updateQuantity={updateQuantity}
+                                getDailyTotal={getDailyTotal}
+                                isLast={false}
+                                style={{
+                                    transform: `translateY(${virtualItem.start}px)`,
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    width: '100%',
+                                    animationDelay: `${virtualItem.index * 30}ms`
+                                }}
+                                className=""
+                                isScrolled={isScrolled}
+                                hoveredColumn={hoveredColumn}
+                            />
                         )
                     })}
                 </TableBody>
