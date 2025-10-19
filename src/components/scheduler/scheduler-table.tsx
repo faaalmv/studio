@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { memo, useState, useRef, useCallback } from 'react';
@@ -10,23 +11,28 @@ import { MEALS } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { SchedulerGroupHeader } from './scheduler-group-header';
 import { useCollapsible } from '@/lib/hooks/use-collapsible';
+import { initialGroups } from '@/lib/data';
 
 type SchedulerTableProps = ReturnType<typeof useScheduler>;
 
 const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals, viewMode, days, updateQuantity, getDailyTotal, isLast, style, className, isScrolled, hoveredColumn }: { item: any, isLast: boolean, style: React.CSSProperties, className: string, isScrolled: boolean, hoveredColumn: number | null } & Omit<SchedulerTableProps, 'items' | 'groups'>) {
     const cellStyles = "p-0 h-14 transition-colors duration-200";
-    const stickyCellStyles = "group-hover:bg-primary/5";
     
     const groupBg = cn("bg-card");
     const groupBorder = cn(
         "border-l-4",
         {
-            'border-chart-1': item.group === 'Fruta',
-            'border-chart-2': item.group === 'Verdura',
-            'border-chart-3': item.group === 'Proteína',
-            'border-chart-4': item.group === 'Lácteo',
-            'border-chart-5': item.group === 'Granos',
-            'border-accent': item.group === 'Snacks',
+            'border-chart-1': item.group === 'Abarrotes',
+            'border-chart-2': item.group === 'Carnes',
+            'border-chart-3': item.group === 'Embutidos',
+            'border-chart-4': item.group === 'Frutas',
+            'border-chart-5': item.group === 'Lacteos',
+            'border-cyan-500': item.group === 'Aves y Huevo',
+            'border-indigo-500': item.group === 'Pescados y Mariscos',
+            'border-amber-500': item.group === 'Panaderia y Tortilleria',
+            'border-lime-500': item.group === 'Semillas y Cereales',
+            'border-emerald-500': item.group === 'Verduras y Hortalizas',
+            'border-sky-500': item.group === 'Congelados',
         }
     );
 
@@ -46,15 +52,14 @@ const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals
 
     return (
         <TableRow className={cn("group row-transition animate-slide-down-fade-in bg-card hover:z-20", className, isLast && "border-b-0")} style={style}>
-            <TableCell className={cn(cellStyles, "sticky left-0 z-10 w-32 text-center align-middle", stickyCellStyles, groupBorder, isLast ? "border-b-0" : "border-b", isScrolled && "shadow-lg", groupBg)}>
-                <Badge variant="secondary" className="font-mono text-xs">{item.code}</Badge>
+            <TableCell className={cn(cellStyles, "sticky left-0 z-10 w-48 p-2 text-left align-middle", groupBorder, isLast ? "border-b-0" : "border-b", isScrolled && "shadow-lg", groupBg)}>
+                <div className="font-bold text-sm">{item.description}</div>
+                <Badge variant="secondary" className="font-mono text-xs mt-1">{item.code}</Badge>
             </TableCell>
-            <TableCell className={cn(cellStyles, "sticky left-32 z-10 w-48 text-left p-2 align-middle", stickyCellStyles, isLast ? "border-b-0" : "border-b", isScrolled && "shadow-lg", groupBg)}>
-                 <div className="font-bold text-sm">{item.description}</div>
-            </TableCell>
-            <TableCell className={cn(cellStyles, "sticky text-center left-[20rem] w-24 font-mono z-10 align-middle text-lg", stickyCellStyles, isLast ? "border-b-0" : "border-b", isScrolled && "shadow-lg", groupBg, totals[item.id].isOverLimit && "text-destructive")}>{total}</TableCell>
-            <TableCell className={cn(cellStyles, "sticky text-center left-[26rem] w-24 font-mono z-10 align-middle text-lg", stickyCellStyles, remainingCellBg, isLast ? "border-b-0" : "border-b", isScrolled && "shadow-lg", "font-bold")}>{remaining}</TableCell>
-            <TableCell className={cn(cellStyles, "sticky text-center left-[32rem] w-24 z-10 align-middle", stickyCellStyles, isLast ? "border-b-0" : "border-b", isScrolled && "shadow-lg", groupBg)}>
+            <TableCell className={cn(cellStyles, "sticky left-48 z-10 w-24 text-center align-middle", isLast ? "border-b-0" : "border-b", isScrolled && "shadow-lg", groupBg)}>{item.unit}</TableCell>
+            <TableCell className={cn(cellStyles, "sticky text-center left-[18rem] w-24 font-mono z-10 align-middle text-lg", isLast ? "border-b-0" : "border-b", isScrolled && "shadow-lg", groupBg, totals[item.id].isOverLimit && "text-destructive")}>{total}</TableCell>
+            <TableCell className={cn(cellStyles, "sticky text-center left-[24rem] w-24 font-mono z-10 align-middle text-lg", remainingCellBg, isLast ? "border-b-0" : "border-b", isScrolled && "shadow-lg", "font-bold")}>{remaining}</TableCell>
+            <TableCell className={cn(cellStyles, "sticky text-center left-[30rem] w-24 z-10 align-middle", isLast ? "border-b-0" : "border-b", isScrolled && "shadow-lg", groupBg)}>
                 <div className="flex justify-center items-center">
                     <div className={cn('h-8 w-8 rounded-full flex items-center justify-center transition-all duration-300', 
                         totals[item.id].isOverLimit ? 'bg-rose-500/20' : (total > 0 ? 'bg-green-500/20' : 'bg-transparent')
@@ -81,7 +86,7 @@ const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals
                                     const currentBreakfast = schedule[item.id]?.[day]?.desayuno ?? 0;
                                     updateQuantity(item.id, day, 'desayuno', currentBreakfast + diff, true);
                                 }}
-                                max={item.maxDaily}
+                                max={item.totalPossible}
                                 dailyTotal={dailyTotal}
                             />
                         </TableCell>
@@ -96,7 +101,7 @@ const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals
                                     <QuantityStepper
                                         value={mealValue}
                                         onValueChange={(newValue) => updateQuantity(item.id, day, meal, newValue)}
-                                        max={item.maxDaily}
+                                        max={item.totalPossible}
                                         dailyTotal={dailyTotal}
                                     />
                                 </TableCell>
@@ -120,7 +125,7 @@ export function SchedulerTable({
     updateQuantity,
     getDailyTotal
 }: SchedulerTableProps) {
-    const { expandedItems, toggleItem } = useCollapsible(groups.map(g => g.name));
+    const { expandedItems, toggleItem } = useCollapsible(initialGroups.map(g => g.name));
     const [isScrolled, setIsScrolled] = useState(false);
     const [hoveredColumn, setHoveredColumn] = useState<number | null>(null);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -139,11 +144,11 @@ export function SchedulerTable({
             <Table className="min-w-max border-separate border-spacing-0">
                 <TableHeader>
                     <TableRow className="hover:bg-transparent">
-                        <TableHead className={cn(headerCellStyles, stickyHeaderBase, "left-0 w-32 z-30 border-b text-center top-0", isScrolled && "shadow-lg")}>Código</TableHead>
-                        <TableHead className={cn(headerCellStyles, stickyHeaderBase, "left-32 w-48 z-30 border-b text-left top-0", isScrolled && "shadow-lg")}>Elemento</TableHead>
-                        <TableHead className={cn(headerCellStyles, stickyHeaderBase, "left-[20rem] w-24 z-30 border-b top-0", isScrolled && "shadow-lg")}>Total</TableHead>
-                        <TableHead className={cn(headerCellStyles, stickyHeaderBase, "left-[26rem] w-24 z-30 border-b top-0", isScrolled && "shadow-lg")}>Rest.</TableHead>
-                        <TableHead className={cn(headerCellStyles, stickyHeaderBase, "left-[32rem] w-24 z-30 border-b top-0", isScrolled && "shadow-lg")}>Estado</TableHead>
+                        <TableHead className={cn(headerCellStyles, stickyHeaderBase, "left-0 w-48 z-30 border-b text-left top-0", isScrolled && "shadow-lg")}>Elemento</TableHead>
+                        <TableHead className={cn(headerCellStyles, stickyHeaderBase, "left-48 w-24 z-30 border-b text-center top-0", isScrolled && "shadow-lg")}>Unidad</TableHead>
+                        <TableHead className={cn(headerCellStyles, stickyHeaderBase, "left-[18rem] w-24 z-30 border-b top-0", isScrolled && "shadow-lg")}>Total</TableHead>
+                        <TableHead className={cn(headerCellStyles, stickyHeaderBase, "left-[24rem] w-24 z-30 border-b top-0", isScrolled && "shadow-lg")}>Rest.</TableHead>
+                        <TableHead className={cn(headerCellStyles, stickyHeaderBase, "left-[30rem] w-24 z-30 border-b top-0", isScrolled && "shadow-lg")}>Estado</TableHead>
                         {days.map(day => (
                             <TableHead 
                                 key={day} 
@@ -159,10 +164,10 @@ export function SchedulerTable({
                     {viewMode === 'detailed' && (
                         <TableRow className="hover:bg-transparent">
                             <TableHead className={cn(headerCellStyles, stickyHeaderBase, "left-0 top-12 z-30", isScrolled && "shadow-lg")}></TableHead>
-                            <TableHead className={cn(headerCellStyles, stickyHeaderBase, "left-32 top-12 z-30", isScrolled && "shadow-lg")}></TableHead>
-                            <TableHead className={cn(headerCellStyles, stickyHeaderBase, "left-[20rem] top-12 z-30", isScrolled && "shadow-lg")}></TableHead>
-                            <TableHead className={cn(headerCellStyles, stickyHeaderBase, "left-[26rem] top-12 z-30", isScrolled && "shadow-lg")}></TableHead>
-                            <TableHead className={cn(headerCellStyles, stickyHeaderBase, "left-[32rem] top-12 z-30", isScrolled && "shadow-lg")}></TableHead>
+                            <TableHead className={cn(headerCellStyles, stickyHeaderBase, "left-48 top-12 z-30", isScrolled && "shadow-lg")}></TableHead>
+                            <TableHead className={cn(headerCellStyles, stickyHeaderBase, "left-[18rem] top-12 z-30", isScrolled && "shadow-lg")}></TableHead>
+                            <TableHead className={cn(headerCellStyles, stickyHeaderBase, "left-[24rem] top-12 z-30", isScrolled && "shadow-lg")}></TableHead>
+                            <TableHead className={cn(headerCellStyles, stickyHeaderBase, "left-[30rem] top-12 z-30", isScrolled && "shadow-lg")}></TableHead>
                             {days.map(day => (
                                 <React.Fragment key={`meals-${day}`}>
                                     <TableHead className={cn(headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 top-12 sticky border-l transition-colors duration-200", hoveredColumn === day && "bg-primary/5")} onMouseEnter={() => setHoveredColumn(day)} onMouseLeave={() => setHoveredColumn(null)}>D</TableHead>
@@ -217,3 +222,5 @@ export function SchedulerTable({
         </div>
     );
 }
+
+    

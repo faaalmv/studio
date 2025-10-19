@@ -1,3 +1,4 @@
+
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -99,16 +100,20 @@ export default {
         'slide-down-fade-in': 'slide-down-fade-in 0.3s ease-out forwards',
       },
       spacing: {
+        '18': '4.5rem',
         '28': '7rem',
         '36': '9rem',
         '48': '12rem',
         '60': '15rem',
         '96': '24rem',
         '[14rem]': '14rem',
+        '[18rem]': '18rem',
         '[20rem]': '20rem',
         '[22rem]': '22rem',
+        '[24rem]': '24rem',
         '[26rem]': '26rem',
         '[28rem]': '28rem',
+        '[30rem]': '30rem',
         '[32rem]': '32rem',
         '[34rem]': '34rem',
       }
@@ -119,6 +124,18 @@ export default {
     { pattern: /border-chart-(1|2|3|4|5)/ },
     'bg-accent/10',
     'border-accent',
+    'bg-cyan-500/10',
+    'border-cyan-500',
+    'bg-indigo-500/10',
+    'border-indigo-500',
+    'bg-amber-500/10',
+    'border-amber-500',
+    'bg-lime-500/10',
+    'border-lime-500',
+    'bg-emerald-500/10',
+    'border-emerald-500',
+    'bg-sky-500/10',
+    'border-sky-500',
     'bg-green-500',
     'bg-sky-500',
     'bg-amber-400',
@@ -137,3 +154,5 @@ export default {
   ],
   plugins: [require('tailwindcss-animate')],
 } satisfies Config;
+
+    

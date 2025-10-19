@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
@@ -37,8 +38,8 @@ export function QuantityStepper({ value, onValueChange, max, dailyTotal }: Quant
 
     if (newNumericValue > maxForThisInput) {
       toast({
-        title: "Límite Diario Excedido",
-        description: `El total para este día no puede superar ${max}.`,
+        title: "Límite Excedido",
+        description: `El total no puede superar ${max}.`,
         variant: "destructive",
       });
       const clampedValue = Math.max(0, maxForThisInput);
@@ -66,8 +67,8 @@ export function QuantityStepper({ value, onValueChange, max, dailyTotal }: Quant
 
     if (otherMealsTotal + potentialNewValue > max) {
        toast({
-        title: "Límite Diario Excedido",
-        description: `El total para este día no puede superar ${max}.`,
+        title: "Límite Excedido",
+        description: `El total no puede superar ${max}.`,
         variant: "destructive",
       });
       const clampedValue = max - otherMealsTotal;
@@ -119,3 +120,5 @@ export function QuantityStepper({ value, onValueChange, max, dailyTotal }: Quant
     </div>
   );
 }
+
+    

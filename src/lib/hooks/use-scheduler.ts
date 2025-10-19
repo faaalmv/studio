@@ -1,8 +1,9 @@
+
 "use client";
 
 import { useState, useMemo, useCallback } from 'react';
 import type { Item, Schedule, Meal, ViewMode, Totals, Group } from '@/lib/types';
-import { initialItems } from '@/lib/data';
+import { initialItems, initialGroups } from '@/lib/data';
 import { MEALS, DAYS_IN_MONTH } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { exportToCsv } from '@/lib/utils';
@@ -30,9 +31,6 @@ const monthOptions = months.map(m => ({ value: m, label: m.charAt(0) + m.slice(1
 
 const services = ['PACIENTES', 'COMEDOR', 'NUTRICIÓN CLÍNICA'];
 const serviceOptions = services.map(s => ({ value: s, label: s }));
-
-const groupNames = ['Fruta', 'Verdura', 'Proteína', 'Lácteo', 'Granos', 'Snacks'];
-const initialGroups: Group[] = groupNames.map(name => ({ name }));
 
 export const useScheduler = () => {
   const [items] = useState<Item[]>(initialItems);
@@ -62,7 +60,7 @@ export const useScheduler = () => {
       for (let day = 1; day <= DAYS_IN_MONTH; day++) {
         total += Object.values(schedule[item.id]?.[day] ?? {}).reduce((a, b) => a + b, 0);
       }
-      const totalPossible = item.maxDaily * DAYS_IN_MONTH;
+      const totalPossible = item.totalPossible;
       const remaining = totalPossible - total;
       newTotals[item.id] = {
         total,
@@ -84,36 +82,31 @@ export const useScheduler = () => {
     if (!item) return;
 
     const currentMealQuantity = schedule[itemId]?.[day]?.[meal] ?? 0;
-    const dailyTotal = getDailyTotal(itemId, day);
-    
-    // In general view, we are setting the total for the day, so other meals are 0.
-    // In detailed view, we need to account for other meals.
-    const otherMealsTotal = isGeneral ? 0 : dailyTotal - currentMealQuantity;
+    const totalScheduled = totals[itemId]?.total ?? 0;
+    const available = item.totalPossible - (totalScheduled - currentMealQuantity);
+
     const finalQuantity = Math.max(0, newQuantity);
 
-    if (otherMealsTotal + finalQuantity > item.maxDaily) {
-      // This case is mostly handled by the QuantityStepper's internal logic,
-      // but we keep a check here as a fallback.
-      const maxPossible = item.maxDaily - otherMealsTotal;
-      toast({
-        title: "Límite Diario Excedido",
-        description: `Solo puedes planificar hasta ${item.maxDaily} unidades de ${item.description} por día.`,
-        variant: "destructive",
-      });
-      if (maxPossible !== currentMealQuantity) {
+    if (finalQuantity > available && !isGeneral) {
+        toast({
+            title: "Límite Total Excedido",
+            description: `No puedes planificar más de ${item.totalPossible} unidades de ${item.description}.`,
+            variant: "destructive",
+        });
+        
         setSchedule(prevSchedule => ({
           ...prevSchedule,
           [itemId]: {
             ...prevSchedule[itemId],
             [day]: {
               ...prevSchedule[itemId][day],
-              [meal]: maxPossible,
+              [meal]: available > 0 ? available : 0,
             },
           },
         }));
-      }
-      return;
+        return;
     }
+
 
     setSchedule(prevSchedule => {
       const newDaySchedule = isGeneral
@@ -128,7 +121,7 @@ export const useScheduler = () => {
         },
       };
     });
-  }, [getDailyTotal, items, schedule, toast]);
+  }, [getDailyTotal, items, schedule, toast, totals]);
 
   const handleExport = useCallback(() => {
     const fileName = `Programacion_${selectedMonth}_${selectedService.replace(/\s+/g, '_')}.csv`;
@@ -165,3 +158,5 @@ export const useScheduler = () => {
     selectedMonthLabel,
   };
 };
+
+    

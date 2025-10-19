@@ -1,3 +1,4 @@
+
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import type { Item, Schedule, ViewMode, Totals, Meal } from './types';
@@ -6,18 +7,6 @@ import { MEALS, DAYS_IN_MONTH } from './types';
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
-}
-
-export function getGroupColorClass(group: string, type: 'border' | 'background'): string {
-  const groupColors: { [key: string]: { border: string, background: string } } = {
-    'Fruta':    { border: 'border-chart-1', background: 'bg-chart-1/10' },
-    'Verdura':  { border: 'border-chart-2', background: 'bg-chart-2/10' },
-    'Proteína': { border: 'border-chart-3', background: 'bg-chart-3/10' },
-    'Lácteo':   { border: 'border-chart-4', background: 'bg-chart-4/10' },
-    'Granos':   { border: 'border-chart-5', background: 'bg-chart-5/10' },
-    'Snacks':   { border: 'border-accent', background: 'bg-accent/10' },
-  };
-  return groupColors[group]?.[type] || '';
 }
 
 export function exportToCsv(items: Item[], schedule: Schedule, totals: Totals, viewMode: ViewMode, fileName: string) {
@@ -65,3 +54,5 @@ export function exportToCsv(items: Item[], schedule: Schedule, totals: Totals, v
   link.click();
   document.body.removeChild(link);
 }
+
+    

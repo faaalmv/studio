@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useMemo } from 'react';
@@ -23,7 +24,7 @@ export const SchedulerGroupHeader: React.FC<GroupHeaderProps> = ({ group, items,
       return { itemCount: 0, availablePercent: 100, progressBarClass: 'bg-green-500' };
     }
 
-    const totalMax = items.reduce((acc, item) => acc + (totals[item.id]?.totalPossible ?? 0), 0);
+    const totalMax = items.reduce((acc, item) => acc + (item.totalPossible ?? 0), 0);
     const totalScheduled = items.reduce((acc, item) => acc + (totals[item.id]?.total ?? 0), 0);
 
     if (totalMax === 0) {
@@ -47,21 +48,31 @@ export const SchedulerGroupHeader: React.FC<GroupHeaderProps> = ({ group, items,
   }, [items, totals]);
 
   const groupBg = cn({
-    'bg-chart-1/10': group.name === 'Fruta',
-    'bg-chart-2/10': group.name === 'Verdura',
-    'bg-chart-3/10': group.name === 'Proteína',
-    'bg-chart-4/10': group.name === 'Lácteo',
-    'bg-chart-5/10': group.name === 'Granos',
-    'bg-accent/10': group.name === 'Snacks',
+    'bg-chart-1/10': group.name === 'Abarrotes',
+    'bg-chart-2/10': group.name === 'Carnes',
+    'bg-chart-3/10': group.name === 'Embutidos',
+    'bg-chart-4/10': group.name === 'Frutas',
+    'bg-chart-5/10': group.name === 'Lacteos',
+    'bg-cyan-500/10': group.name === 'Aves y Huevo',
+    'bg-indigo-500/10': group.name === 'Pescados y Mariscos',
+    'bg-amber-500/10': group.name === 'Panaderia y Tortilleria',
+    'bg-lime-500/10': group.name === 'Semillas y Cereales',
+    'bg-emerald-500/10': group.name === 'Verduras y Hortalizas',
+    'bg-sky-500/10': group.name === 'Congelados',
   });
   
   const groupBorder = cn({
-    'border-chart-1': group.name === 'Fruta',
-    'border-chart-2': group.name === 'Verdura',
-    'border-chart-3': group.name === 'Proteína',
-    'border-chart-4': group.name === 'Lácteo',
-    'border-chart-5': group.name === 'Granos',
-    'border-accent': group.name === 'Snacks',
+    'border-chart-1': group.name === 'Abarrotes',
+    'border-chart-2': group.name === 'Carnes',
+    'border-chart-3': group.name === 'Embutidos',
+    'border-chart-4': group.name === 'Frutas',
+    'border-chart-5': group.name === 'Lacteos',
+    'border-cyan-500': group.name === 'Aves y Huevo',
+    'border-indigo-500': group.name === 'Pescados y Mariscos',
+    'border-amber-500': group.name === 'Panaderia y Tortilleria',
+    'border-lime-500': group.name === 'Semillas y Cereales',
+    'border-emerald-500': group.name === 'Verduras y Hortalizas',
+    'border-sky-500': group.name === 'Congelados',
   });
 
   return (
@@ -96,3 +107,5 @@ export const SchedulerGroupHeader: React.FC<GroupHeaderProps> = ({ group, items,
     </TableRow>
   );
 };
+
+    

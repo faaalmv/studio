@@ -1,3 +1,4 @@
+
 export type Meal = 'desayuno' | 'almuerzo' | 'cena';
 
 export const MEALS: Meal[] = ['desayuno', 'almuerzo', 'cena'];
@@ -9,7 +10,8 @@ export interface Item {
   code: string;
   description: string;
   group: string;
-  maxDaily: number;
+  totalPossible: number;
+  unit: string;
 }
 
 export interface Group {
@@ -34,3 +36,5 @@ export interface Totals {
 }
 
 export type ViewMode = 'general' | 'detailed';
+
+    
