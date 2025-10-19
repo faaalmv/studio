@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useCallback } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import type { Item, Schedule, Meal, ViewMode, Totals } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import { exportToCsv } from '@/lib/utils';
@@ -15,6 +16,7 @@ export const useSchedulerActions = (
   setSchedule: React.Dispatch<React.SetStateAction<Schedule>>
 ) => {
   const { toast } = useToast();
+  const [downloadLink, setDownloadLink] = useState<{ href: string; download: string } | null>(null);
 
   const updateQuantity = useCallback((itemId: string, day: number, meal: Meal, newQuantity: number, isGeneral: boolean = false) => {
     const item = items.find(i => i.id === itemId);
@@ -63,12 +65,25 @@ export const useSchedulerActions = (
 
   const handleExport = useCallback(() => {
     const fileName = `Programacion_${selectedMonth}_${selectedService.replace(/\s+/g, '_')}.csv`;
-    exportToCsv(items, schedule, totals, viewMode, fileName);
+    const { encodedUri } = exportToCsv(items, schedule, totals, viewMode, fileName);
+    setDownloadLink({ href: encodedUri, download: fileName });
     toast({
       title: "Exportación Exitosa",
       description: "Tu planificación ha sido exportada a CSV.",
     });
   }, [items, schedule, totals, viewMode, toast, selectedMonth, selectedService]);
+  
+  useEffect(() => {
+    if (downloadLink) {
+      const link = document.createElement("a");
+      link.setAttribute("href", downloadLink.href);
+      link.setAttribute("download", downloadLink.download);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setDownloadLink(null);
+    }
+  }, [downloadLink]);
 
   return { updateQuantity, onExport: handleExport };
 };

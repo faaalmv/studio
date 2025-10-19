@@ -46,13 +46,10 @@ export function exportToCsv(items: Item[], schedule: Schedule, totals: Totals, v
     csvContent += row.join(',') + '\r\n';
   });
 
-  const encodedUri = encodeURI(csvContent);
-  const link = document.createElement("a");
-  link.setAttribute("href", encodedUri);
-  link.setAttribute("download", fileName);
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
+  return {
+    encodedUri: encodeURI(csvContent),
+    fileName
+  };
 }
 
     
