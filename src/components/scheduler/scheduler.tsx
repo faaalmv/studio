@@ -1,0 +1,30 @@
+"use client";
+
+import { useScheduler } from "@/lib/hooks/use-scheduler";
+import { SchedulerHeader } from "./scheduler-header";
+import { SchedulerTable } from "./scheduler-table";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+export default function Scheduler() {
+  const scheduler = useScheduler();
+
+  return (
+    <Card className="w-full overflow-hidden shadow-lg">
+      <CardHeader>
+        <CardTitle className="text-2xl font-bold text-primary">Monthly Scheduler</CardTitle>
+        <SchedulerHeader
+          filter={scheduler.filter}
+          setFilter={scheduler.setFilter}
+          viewMode={scheduler.viewMode}
+          setViewMode={scheduler.setViewMode}
+          onExport={scheduler.handleExport}
+        />
+      </CardHeader>
+      <CardContent className="p-0">
+        <div className="overflow-x-auto">
+            <SchedulerTable {...scheduler} />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
