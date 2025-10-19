@@ -14,10 +14,8 @@ export default function Scheduler() {
         <SchedulerHeader {...scheduler} />
       </header>
       <Card className="w-full overflow-hidden shadow-2xl shadow-primary/10 h-[calc(100vh-12rem)] sm:h-[calc(100vh-14rem)] flex flex-col rounded-2xl border-primary/10">
-        <CardContent className="p-0 flex-grow relative">
-          <div className="h-full w-full overflow-auto">
+        <CardContent className="p-0 flex-grow relative overflow-auto">
             <SchedulerTable {...scheduler} />
-          </div>
         </CardContent>
       </Card>
     </div>

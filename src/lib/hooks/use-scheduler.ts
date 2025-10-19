@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback } from 'react';
-import type { Item, Schedule, Meal, ViewMode, Totals } from '@/lib/types';
+import type { Item, Schedule, Meal, ViewMode, Totals, Group } from '@/lib/types';
 import { initialItems } from '@/lib/data';
 import { MEALS, DAYS_IN_MONTH } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
@@ -23,7 +23,7 @@ const transformInitialData = (items: Item[]): Schedule => {
 };
 
 const months = [
-  'ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 
+  'ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO',
   'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'
 ];
 const monthOptions = months.map(m => ({ value: m, label: m.charAt(0) + m.slice(1).toLowerCase() }));
@@ -31,8 +31,12 @@ const monthOptions = months.map(m => ({ value: m, label: m.charAt(0) + m.slice(1
 const services = ['PACIENTES', 'COMEDOR', 'NUTRICIÓN CLÍNICA'];
 const serviceOptions = services.map(s => ({ value: s, label: s }));
 
+const groupNames = ['Fruta', 'Verdura', 'Proteína', 'Lácteo', 'Granos', 'Snacks'];
+const initialGroups: Group[] = groupNames.map(name => ({ name }));
+
 export const useScheduler = () => {
   const [items] = useState<Item[]>(initialItems);
+  const [groups] = useState<Group[]>(initialGroups);
   const [schedule, setSchedule] = useState<Schedule>(() => transformInitialData(items));
   const [viewMode, setViewMode] = useState<ViewMode>('general');
   const [filter, setFilter] = useState('');
@@ -56,12 +60,14 @@ export const useScheduler = () => {
     items.forEach(item => {
       let total = 0;
       for (let day = 1; day <= DAYS_IN_MONTH; day++) {
-        total += Object.values(schedule[item.id][day]).reduce((a, b) => a + b, 0);
+        total += Object.values(schedule[item.id]?.[day] ?? {}).reduce((a, b) => a + b, 0);
       }
-      const remaining = item.maxDaily * DAYS_IN_MONTH - total;
+      const totalPossible = item.maxDaily * DAYS_IN_MONTH;
+      const remaining = totalPossible - total;
       newTotals[item.id] = {
         total,
         remaining,
+        totalPossible,
         isOverLimit: remaining < 0,
       };
     });
@@ -74,28 +80,46 @@ export const useScheduler = () => {
   }, [schedule]);
 
   const updateQuantity = useCallback((itemId: string, day: number, meal: Meal, newQuantity: number) => {
-      const item = items.find(i => i.id === itemId);
-      if (!item) return;
+    const item = items.find(i => i.id === itemId);
+    if (!item) return;
 
-      const dailyTotal = getDailyTotal(itemId, day);
-      const otherMealsTotal = dailyTotal - (schedule[itemId][day][meal] || 0);
+    const currentMealQuantity = schedule[itemId]?.[day]?.[meal] ?? 0;
+    const dailyTotal = getDailyTotal(itemId, day);
+    const otherMealsTotal = dailyTotal - currentMealQuantity;
+    const finalQuantity = Math.max(0, newQuantity);
 
-      if (otherMealsTotal + newQuantity > item.maxDaily) {
-        toast({
-          title: "Límite Diario Excedido",
-          description: `Solo puedes planificar hasta ${item.maxDaily} unidades de ${item.description} por día.`,
-          variant: "destructive",
-        });
-        return;
-      }
-
-      setSchedule(prevSchedule => {
-        const newSchedule = { ...prevSchedule };
-        newSchedule[itemId] = { ...newSchedule[itemId] };
-        newSchedule[itemId][day] = { ...newSchedule[itemId][day], [meal]: newQuantity };
-        return newSchedule;
+    if (otherMealsTotal + finalQuantity > item.maxDaily) {
+      toast({
+        title: "Límite Diario Excedido",
+        description: `Solo puedes planificar hasta ${item.maxDaily} unidades de ${item.description} por día.`,
+        variant: "destructive",
       });
-    }, [getDailyTotal, items, schedule, toast]);
+      // Revert to the max possible value
+      const maxPossible = item.maxDaily - otherMealsTotal;
+       setSchedule(prevSchedule => ({
+        ...prevSchedule,
+        [itemId]: {
+          ...prevSchedule[itemId],
+          [day]: {
+            ...prevSchedule[itemId][day],
+            [meal]: maxPossible,
+          },
+        },
+      }));
+      return;
+    }
+
+    setSchedule(prevSchedule => ({
+        ...prevSchedule,
+        [itemId]: {
+          ...prevSchedule[itemId],
+          [day]: {
+            ...prevSchedule[itemId][day],
+            [meal]: finalQuantity,
+          },
+        },
+      }));
+  }, [getDailyTotal, items, schedule, toast]);
 
   const handleExport = useCallback(() => {
     const fileName = `Programacion_${selectedMonth}_${selectedService.replace(/\s+/g, '_')}.csv`;
@@ -112,6 +136,7 @@ export const useScheduler = () => {
 
   return {
     items: filteredItems,
+    groups,
     schedule,
     totals,
     viewMode,
@@ -121,7 +146,7 @@ export const useScheduler = () => {
     setFilter,
     updateQuantity,
     getDailyTotal,
-    handleExport,
+    onExport: handleExport,
     selectedMonth,
     setSelectedMonth,
     monthOptions,

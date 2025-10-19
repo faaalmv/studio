@@ -88,10 +88,15 @@ export default {
             height: '0',
           },
         },
+        'slide-down-fade-in': {
+          from: { opacity: '0', transform: 'translateY(-10px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'slide-down-fade-in': 'slide-down-fade-in 0.3s ease-out forwards',
       },
       spacing: {
         '28': '7rem',
@@ -104,10 +109,15 @@ export default {
     },
   },
   safelist: [
-    { pattern: /bg-chart-(1|2|3|4|5)\/10/ },
+    { pattern: /bg-chart-(1|2|3|4|5)/ },
     { pattern: /border-chart-(1|2|3|4|5)/ },
-    'bg-accent/10',
+    'bg-accent',
     'border-accent',
+    'bg-green-500',
+    'bg-sky-500',
+    'bg-amber-400',
+    'bg-orange-500',
+    'bg-rose-500',
   ],
   plugins: [require('tailwindcss-animate')],
 } satisfies Config;

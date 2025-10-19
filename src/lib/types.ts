@@ -12,6 +12,10 @@ export interface Item {
   maxDaily: number;
 }
 
+export interface Group {
+  name: string;
+}
+
 export interface Schedule {
   [itemId: string]: {
     [day: number]: {
@@ -24,6 +28,7 @@ export interface Totals {
   [itemId: string]: {
     total: number;
     remaining: number;
+    totalPossible: number;
     isOverLimit: boolean;
   };
 }
