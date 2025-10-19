@@ -7,7 +7,7 @@ import type { useScheduler } from '@/lib/hooks/use-scheduler';
 import { CheckCircle, AlertTriangle } from "lucide-react";
 import { QuantityStepper } from './quantity-stepper';
 import { MEALS } from '@/lib/types';
-import { cn } from '@/lib/utils';
+import { cn, getGroupColorClass } from '@/lib/utils';
 import { SchedulerGroupHeader } from './scheduler-group-header';
 import { useCollapsible } from '@/lib/hooks/use-collapsible';
 
@@ -15,34 +15,20 @@ type SchedulerTableProps = ReturnType<typeof useScheduler>;
 
 const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals, viewMode, days, updateQuantity, getDailyTotal, isLast, style, className }: { item: any, isLast: boolean, style: React.CSSProperties, className: string } & Omit<SchedulerTableProps, 'items' | 'groups'>) {
     const cellStyles = "p-0 h-14";
-    const groupBg = cn({
-        'bg-chart-1/5': item.group === 'Fruta',
-        'bg-chart-2/5': item.group === 'Verdura',
-        'bg-chart-3/5': item.group === 'Proteína',
-        'bg-chart-4/5': item.group === 'Lácteo',
-        'bg-chart-5/5': item.group === 'Granos',
-        'bg-accent/5': item.group === 'Snacks',
-    });
-     const groupBorder = cn({
-        'border-l-4 border-chart-1': item.group === 'Fruta',
-        'border-l-4 border-chart-2': item.group === 'Verdura',
-        'border-l-4 border-chart-3': item.group === 'Proteína',
-        'border-l-4 border-chart-4': item.group === 'Lácteo',
-        'border-l-4 border-chart-5': item.group === 'Granos',
-        'border-l-4 border-accent': item.group === 'Snacks',
-    });
+    const groupBg = getGroupColorClass(item.group, 'background');
+    const groupBorder = getGroupColorClass(item.group, 'border');
 
     return (
-        <TableRow className={cn("transition-all duration-200 ease-in-out hover:shadow-lg hover:-translate-y-px", className, isLast && "border-b-0")} style={style}>
-            <TableCell className={cn(cellStyles, "sticky left-0 z-10 w-60 align-top bg-card/95 backdrop-blur-sm", groupBg, groupBorder, !isLast && "border-b")}>
-                <div className="font-bold p-2 text-sm">{item.description}</div>
-            </TableCell>
-            <TableCell className={cn(cellStyles, "sticky left-60 z-10 w-28 text-center align-middle bg-card/95 backdrop-blur-sm", groupBg, !isLast && "border-b")}>
+        <TableRow className={cn("transition-all duration-200 ease-in-out hover:shadow-lg hover:z-10 hover:-translate-y-px", className, isLast && "border-b-0")} style={style}>
+            <TableCell className={cn(cellStyles, "sticky left-0 z-10 w-32 text-center align-middle bg-card/95 backdrop-blur-sm", groupBg, groupBorder, !isLast && "border-b")}>
                 <Badge variant="secondary" className="font-mono text-xs">{item.code}</Badge>
             </TableCell>
-            <TableCell className={cn(cellStyles, "sticky text-center left-[22rem] w-24 font-mono z-10 align-middle text-lg bg-card/95 backdrop-blur-sm", groupBg, !isLast && "border-b")}>{totals[item.id].total}</TableCell>
-            <TableCell className={cn(cellStyles, "sticky text-center left-[28rem] w-24 font-mono z-10 align-middle text-lg bg-card/95 backdrop-blur-sm", totals[item.id].isOverLimit ? "text-destructive" : "text-muted-foreground", groupBg, !isLast && "border-b")}>{totals[item.id].remaining}</TableCell>
-            <TableCell className={cn(cellStyles, "sticky text-center left-[34rem] w-24 z-10 align-middle bg-card/95 backdrop-blur-sm", groupBg, !isLast && "border-b")}>
+            <TableCell className={cn(cellStyles, "sticky left-32 z-10 w-60 align-top bg-card/95 backdrop-blur-sm", groupBg, groupBorder, !isLast && "border-b")}>
+                <div className="font-bold p-2 text-sm">{item.description}</div>
+            </TableCell>
+            <TableCell className={cn(cellStyles, "sticky text-center left-[22rem] w-24 font-mono z-10 align-middle text-lg bg-card/95 backdrop-blur-sm", groupBg, groupBorder, !isLast && "border-b")}>{totals[item.id].total}</TableCell>
+            <TableCell className={cn(cellStyles, "sticky text-center left-[28rem] w-24 font-mono z-10 align-middle text-lg bg-card/95 backdrop-blur-sm", totals[item.id].isOverLimit ? "text-destructive" : "text-muted-foreground", groupBg, groupBorder, !isLast && "border-b")}>{totals[item.id].remaining}</TableCell>
+            <TableCell className={cn(cellStyles, "sticky text-center left-[34rem] w-24 z-10 align-middle bg-card/95 backdrop-blur-sm", groupBg, groupBorder, !isLast && "border-b")}>
                 {totals[item.id].isOverLimit ? (
                     <AlertTriangle className="h-5 w-5 text-destructive mx-auto" />
                 ) : (
@@ -50,18 +36,19 @@ const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals
                 )}
             </TableCell>
             {days.map(day => {
+                const dailyTotal = getDailyTotal(item.id, day);
                 if (viewMode === 'general') {
-                    const dailyTotal = getDailyTotal(item.id, day);
                     return (
                         <TableCell key={`${item.id}-${day}`} className={cn("text-center w-24 align-middle border-l", cellStyles, !isLast && "border-b")}>
-                            <QuantityStepper
+                             <QuantityStepper
                                 value={dailyTotal}
                                 onValueChange={(newValue) => {
                                     const diff = newValue - dailyTotal;
-                                    const currentBreakfast = schedule[item.id][day].desayuno;
-                                    updateQuantity(item.id, day, 'desayuno', currentBreakfast + diff);
+                                    const currentBreakfast = schedule[item.id]?.[day]?.desayuno ?? 0;
+                                    updateQuantity(item.id, day, 'desayuno', currentBreakfast + diff, true);
                                 }}
                                 max={item.maxDaily}
+                                dailyTotal={dailyTotal}
                             />
                         </TableCell>
                     );
@@ -71,9 +58,10 @@ const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals
                         {MEALS.map(meal => (
                             <TableCell key={`${item.id}-${day}-${meal}`} className={cn("w-12 align-middle border-l", cellStyles, !isLast && "border-b")}>
                                 <QuantityStepper
-                                    value={schedule[item.id][day][meal]}
+                                    value={schedule[item.id]?.[day]?.[meal] ?? 0}
                                     onValueChange={(newValue) => updateQuantity(item.id, day, meal, newValue)}
                                     max={item.maxDaily}
+                                    dailyTotal={dailyTotal}
                                 />
                             </TableCell>
                         ))}
@@ -106,8 +94,8 @@ export function SchedulerTable({
         <Table className="min-w-max border-separate border-spacing-0">
             <TableHeader>
                 <TableRow className="hover:bg-transparent">
-                    <TableHead className={cn(stickyHeaderCellStyles, "left-0 w-60 z-40 border-b text-left")}>Elemento</TableHead>
-                    <TableHead className={cn(stickyHeaderCellStyles, "left-60 w-28 z-40 border-b")}>Código</TableHead>
+                    <TableHead className={cn(stickyHeaderCellStyles, "left-0 w-32 z-40 border-b text-left")}>Código</TableHead>
+                    <TableHead className={cn(stickyHeaderCellStyles, "left-32 w-60 z-40 border-b text-left")}>Elemento</TableHead>
                     <TableHead className={cn(stickyHeaderCellStyles, "left-[22rem] w-24 z-40 border-b")}>Total</TableHead>
                     <TableHead className={cn(stickyHeaderCellStyles, "left-[28rem] w-24 z-40 border-b")}>Rest.</TableHead>
                     <TableHead className={cn(stickyHeaderCellStyles, "left-[34rem] w-24 z-40 border-b")}>Estado</TableHead>
@@ -120,7 +108,7 @@ export function SchedulerTable({
                 {viewMode === 'detailed' && (
                     <TableRow className="hover:bg-transparent">
                         <TableHead className={cn(stickyHeaderCellStyles, "left-0 top-12 z-40")}></TableHead>
-                        <TableHead className={cn(stickyHeaderCellStyles, "left-60 top-12 z-40")}></TableHead>
+                        <TableHead className={cn(stickyHeaderCellStyles, "left-32 top-12 z-40")}></TableHead>
                         <TableHead className={cn(stickyHeaderCellStyles, "left-[22rem] top-12 z-40")}></TableHead>
                         <TableHead className={cn(stickyHeaderCellStyles, "left-[28rem] top-12 z-40")}></TableHead>
                         <TableHead className={cn(stickyHeaderCellStyles, "left-[34rem] top-12 z-40")}></TableHead>
@@ -174,5 +162,3 @@ export function SchedulerTable({
         </Table>
     );
 }
-
-    

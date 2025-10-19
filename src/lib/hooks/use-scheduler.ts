@@ -79,46 +79,55 @@ export const useScheduler = () => {
     return Object.values(schedule[itemId][day]).reduce((sum, current) => sum + current, 0);
   }, [schedule]);
 
-  const updateQuantity = useCallback((itemId: string, day: number, meal: Meal, newQuantity: number) => {
+  const updateQuantity = useCallback((itemId: string, day: number, meal: Meal, newQuantity: number, isGeneral: boolean = false) => {
     const item = items.find(i => i.id === itemId);
     if (!item) return;
 
     const currentMealQuantity = schedule[itemId]?.[day]?.[meal] ?? 0;
     const dailyTotal = getDailyTotal(itemId, day);
-    const otherMealsTotal = dailyTotal - currentMealQuantity;
+    
+    // In general view, we are setting the total for the day, so other meals are 0.
+    // In detailed view, we need to account for other meals.
+    const otherMealsTotal = isGeneral ? 0 : dailyTotal - currentMealQuantity;
     const finalQuantity = Math.max(0, newQuantity);
 
     if (otherMealsTotal + finalQuantity > item.maxDaily) {
+      // This case is mostly handled by the QuantityStepper's internal logic,
+      // but we keep a check here as a fallback.
+      const maxPossible = item.maxDaily - otherMealsTotal;
       toast({
         title: "Límite Diario Excedido",
         description: `Solo puedes planificar hasta ${item.maxDaily} unidades de ${item.description} por día.`,
         variant: "destructive",
       });
-      // Revert to the max possible value
-      const maxPossible = item.maxDaily - otherMealsTotal;
-       setSchedule(prevSchedule => ({
-        ...prevSchedule,
-        [itemId]: {
-          ...prevSchedule[itemId],
-          [day]: {
-            ...prevSchedule[itemId][day],
-            [meal]: maxPossible,
+      if (maxPossible !== currentMealQuantity) {
+        setSchedule(prevSchedule => ({
+          ...prevSchedule,
+          [itemId]: {
+            ...prevSchedule[itemId],
+            [day]: {
+              ...prevSchedule[itemId][day],
+              [meal]: maxPossible,
+            },
           },
-        },
-      }));
+        }));
+      }
       return;
     }
 
-    setSchedule(prevSchedule => ({
+    setSchedule(prevSchedule => {
+      const newDaySchedule = isGeneral
+        ? { desayuno: finalQuantity, almuerzo: 0, cena: 0 }
+        : { ...prevSchedule[itemId][day], [meal]: finalQuantity };
+
+      return {
         ...prevSchedule,
         [itemId]: {
           ...prevSchedule[itemId],
-          [day]: {
-            ...prevSchedule[itemId][day],
-            [meal]: finalQuantity,
-          },
+          [day]: newDaySchedule,
         },
-      }));
+      };
+    });
   }, [getDailyTotal, items, schedule, toast]);
 
   const handleExport = useCallback(() => {
