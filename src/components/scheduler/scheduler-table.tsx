@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import type { useScheduler } from '@/lib/hooks/use-scheduler';
 import { CheckCircle, AlertTriangle } from "lucide-react";
 import { QuantityStepper } from './quantity-stepper';
-import { MEALS } from '@/lib/types';
+import { MEALS, Meal } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import { SchedulerGroupHeader } from './scheduler-group-header';
 import { useCollapsible } from '@/lib/hooks/use-collapsible';
@@ -17,6 +17,17 @@ import { GROUP_STYLES, STICKY_CELL_CLASSES, REMAINING_CELL_BG_CLASSES } from '@/
 
 type SchedulerTableProps = ReturnType<typeof useScheduler>;
 
+/**
+ * A memoized component that renders a sticky table cell.
+ * @param {object} props - The component props.
+ * @param {boolean} props.isScrolled - Whether the table is scrolled.
+ * @param {string} props.position - The sticky position of the cell.
+ * @param {string} props.width - The width of the cell.
+ * @param {React.ReactNode} props.children - The content of the cell.
+ * @param {string} [props.className] - Additional CSS classes.
+ * @param {boolean} [props.isHeader] - Whether the cell is a header cell.
+ * @returns {JSX.Element} The rendered table cell.
+ */
 const StickyTableCell = React.forwardRef<HTMLTableCellElement, { isScrolled: boolean, position: string, width: string, children: React.ReactNode, className?: string, isHeader?: boolean, [key: string]: any }>(({ isScrolled, position, width, children, className, isHeader, ...props }, ref) => (
     <TableCell 
         ref={ref}
@@ -36,7 +47,11 @@ const StickyTableCell = React.forwardRef<HTMLTableCellElement, { isScrolled: boo
 ));
 StickyTableCell.displayName = 'StickyTableCell';
 
-
+/**
+ * A memoized component that renders a row in the scheduler table.
+ * @param {object} props - The component props.
+ * @returns {JSX.Element} The rendered table row.
+ */
 const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals, viewMode, days, updateQuantity, getDailyTotal, isLast, style, className, isScrolled, hoveredColumn }: { item: any, isLast: boolean, style: React.CSSProperties, className: string, isScrolled: boolean, hoveredColumn: number | null } & Omit<SchedulerTableProps, 'items' | 'groups'>) {
     const id = useId();
     const cellStyles = "p-0 h-14 transition-colors duration-200";
@@ -117,9 +132,9 @@ const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals
 
                 return (
                     <React.Fragment key={`${item.id}-${day}-detailed`}>
-                        {MEALS.map((meal, mealIndex) => {
+                        {MEALS.map((meal: Meal) => {
                             const mealValue = schedule[item.id]?.[day]?.[meal] ?? 0;
-                            const borderClass = mealIndex === 2 ? 'border-r-slate-300' : 'border-r-dotted border-r-slate-200';
+                            const borderClass = meal === 'cena' ? 'border-r-slate-300' : 'border-r-dotted border-r-slate-200';
                             const backgroundClass = (day - 1) % 2 === 0 ? 'bg-slate-50/50' : 'bg-card';
                             const mealStepperId = `${id}-stepper-${day}-${meal}`;
 
@@ -145,6 +160,11 @@ const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals
     )
 });
 
+/**
+ * The main table component for the scheduler.
+ * @param {SchedulerTableProps} props - The component props, derived from the useScheduler hook.
+ * @returns {JSX.Element} The rendered scheduler table.
+ */
 export function SchedulerTable({
     items,
     groups,

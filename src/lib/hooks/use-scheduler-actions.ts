@@ -17,6 +17,7 @@ export const useSchedulerActions = (
 ) => {
   const { toast } = useToast();
   const [downloadLink, setDownloadLink] = useState<{ href: string; download: string } | null>(null);
+  const [errors, setErrors] = useState<Record<string, boolean>>({});
 
   const updateQuantity = useCallback((itemId: string, day: number, meal: Meal, newQuantity: number, isGeneral: boolean = false) => {
     const item = items.find(i => i.id === itemId);
@@ -27,6 +28,7 @@ export const useSchedulerActions = (
     const available = item.totalPossible - (totalScheduled - currentMealQuantity);
 
     const finalQuantity = Math.max(0, newQuantity);
+    const errorKey = `${itemId}-${day}-${meal}`;
 
     if (finalQuantity > available && !isGeneral) {
         toast({
@@ -35,18 +37,15 @@ export const useSchedulerActions = (
             variant: "destructive",
         });
         
-        setSchedule(prevSchedule => ({
-          ...prevSchedule,
-          [itemId]: {
-            ...prevSchedule[itemId],
-            [day]: {
-              ...prevSchedule[itemId][day],
-              [meal]: available > 0 ? available : 0,
-            },
-          },
-        }));
+        setErrors(prev => ({...prev, [errorKey]: true}));
         return;
     }
+
+    setErrors(prev => {
+        const newErrors = {...prev};
+        delete newErrors[errorKey];
+        return newErrors;
+    });
 
     setSchedule(prevSchedule => {
       const newDaySchedule = isGeneral
@@ -84,6 +83,15 @@ export const useSchedulerActions = (
       setDownloadLink(null);
     }
   }, [downloadLink]);
+  
+  const clearError = useCallback((errorKey: string) => {
+      setErrors(prev => {
+          const newErrors = {...prev};
+          delete newErrors[errorKey];
+          return newErrors;
+      });
+  }, []);
 
-  return { updateQuantity, onExport: handleExport };
+
+  return { updateQuantity, onExport: handleExport, errors, clearError };
 };
