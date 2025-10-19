@@ -22,8 +22,8 @@ export function SchedulerTable({
 }: SchedulerTableProps) {
 
   const cellStyles = "p-0 h-14";
-  const headerCellStyles = "p-2 align-middle text-sm font-semibold text-center";
-  const stickyHeaderClass = "sticky z-10 top-0 bg-card/95 backdrop-blur-sm shadow-sm";
+  const headerCellStyles = "p-2 align-middle text-sm font-semibold text-center bg-card";
+  const stickyHeaderClass = "sticky z-10 top-0 shadow-sm";
   const stickyCellClass = "sticky bg-card/95 backdrop-blur-sm z-[1]";
   
   return (
@@ -60,57 +60,62 @@ export function SchedulerTable({
           )}
         </TableHeader>
         <TableBody>
-          {items.map((item) => (
-            <TableRow key={item.id} className={cn("transition-colors hover:bg-muted/50", getGroupColorClass(item.group, 'background'))}>
-              <TableCell className={cn(stickyCellClass, cellStyles, "left-0 w-60 z-20 align-top border-b border-r", getGroupColorClass(item.group, 'border'), "border-l-4")}>
-                <div className="font-medium p-2">{item.description}</div>
-                <div className="text-xs text-muted-foreground px-2 pb-1">{item.group}</div>
-              </TableCell>
-              <TableCell className={cn(stickyCellClass, cellStyles, "left-60 w-28 z-20 text-center align-middle border-b border-r")}>
-                  <Badge variant="secondary" className="font-mono">{item.code}</Badge>
-              </TableCell>
-              <TableCell className={cn(stickyCellClass, cellStyles, "text-center left-[22rem] w-24 font-mono z-20 align-middle text-lg border-b border-r")}>{totals[item.id].total}</TableCell>
-              <TableCell className={cn(stickyCellClass, cellStyles, "text-center left-[28rem] w-24 font-mono z-20 align-middle text-lg border-b border-r", totals[item.id].isOverLimit ? "text-destructive" : "text-muted-foreground")}>{totals[item.id].remaining}</TableCell>
-              <TableCell className={cn(stickyCellClass, cellStyles, "text-center left-[34rem] w-24 z-20 align-middle border-b")}>
-                {totals[item.id].isOverLimit ? (
-                  <AlertTriangle className="h-5 w-5 text-destructive mx-auto" />
-                ) : (
-                  <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
-                )}
-              </TableCell>
-              {days.map(day => {
-                if (viewMode === 'general') {
-                   const dailyTotal = getDailyTotal(item.id, day);
-                   return (
-                    <TableCell key={`${item.id}-${day}`} className={cn("text-center w-24 align-middle border-b border-l", cellStyles)}>
-                        <QuantityStepper
-                          value={dailyTotal}
-                          onValueChange={(newValue) => {
-                            const diff = newValue - dailyTotal;
-                            const currentBreakfast = schedule[item.id][day].desayuno;
-                            updateQuantity(item.id, day, 'desayuno', currentBreakfast + diff);
-                          }}
-                          max={item.maxDaily}
-                        />
-                    </TableCell>
-                   );
-                }
-                return (
-                    <React.Fragment key={`${item.id}-${day}-detailed`}>
-                        {MEALS.map(meal => (
-                            <TableCell key={`${item.id}-${day}-${meal}`} className={cn("w-12 align-middle border-b border-l", cellStyles)}>
-                                <QuantityStepper 
-                                    value={schedule[item.id][day][meal]}
-                                    onValueChange={(newValue) => updateQuantity(item.id, day, meal, newValue)}
-                                    max={item.maxDaily}
-                                />
-                            </TableCell>
-                        ))}
-                    </React.Fragment>
-                )
-              })}
-            </TableRow>
-          ))}
+          {items.map((item) => {
+            const groupBg = getGroupColorClass(item.group, 'background');
+            const groupBorder = getGroupColorClass(item.group, 'border');
+
+            return (
+              <TableRow key={item.id} className={cn("transition-colors hover:bg-muted/50")}>
+                <TableCell className={cn(stickyCellClass, cellStyles, groupBg, groupBorder, "left-0 w-60 z-20 align-top border-b border-r border-l-4")}>
+                  <div className="font-medium p-2">{item.description}</div>
+                  <div className="text-xs text-muted-foreground px-2 pb-1">{item.group}</div>
+                </TableCell>
+                <TableCell className={cn(stickyCellClass, cellStyles, groupBg, "left-60 w-28 z-20 text-center align-middle border-b border-r")}>
+                    <Badge variant="secondary" className="font-mono">{item.code}</Badge>
+                </TableCell>
+                <TableCell className={cn(stickyCellClass, cellStyles, groupBg, "text-center left-[22rem] w-24 font-mono z-20 align-middle text-lg border-b border-r")}>{totals[item.id].total}</TableCell>
+                <TableCell className={cn(stickyCellClass, cellStyles, groupBg, "text-center left-[28rem] w-24 font-mono z-20 align-middle text-lg border-b border-r", totals[item.id].isOverLimit ? "text-destructive" : "text-muted-foreground")}>{totals[item.id].remaining}</TableCell>
+                <TableCell className={cn(stickyCellClass, cellStyles, groupBg, "text-center left-[34rem] w-24 z-20 align-middle border-b")}>
+                  {totals[item.id].isOverLimit ? (
+                    <AlertTriangle className="h-5 w-5 text-destructive mx-auto" />
+                  ) : (
+                    <CheckCircle className="h-5 w-5 text-green-500 mx-auto" />
+                  )}
+                </TableCell>
+                {days.map(day => {
+                  if (viewMode === 'general') {
+                     const dailyTotal = getDailyTotal(item.id, day);
+                     return (
+                      <TableCell key={`${item.id}-${day}`} className={cn("text-center w-24 align-middle border-b border-l", cellStyles)}>
+                          <QuantityStepper
+                            value={dailyTotal}
+                            onValueChange={(newValue) => {
+                              const diff = newValue - dailyTotal;
+                              const currentBreakfast = schedule[item.id][day].desayuno;
+                              updateQuantity(item.id, day, 'desayuno', currentBreakfast + diff);
+                            }}
+                            max={item.maxDaily}
+                          />
+                      </TableCell>
+                     );
+                  }
+                  return (
+                      <React.Fragment key={`${item.id}-${day}-detailed`}>
+                          {MEALS.map(meal => (
+                              <TableCell key={`${item.id}-${day}-${meal}`} className={cn("w-12 align-middle border-b border-l", cellStyles)}>
+                                  <QuantityStepper 
+                                      value={schedule[item.id][day][meal]}
+                                      onValueChange={(newValue) => updateQuantity(item.id, day, meal, newValue)}
+                                      max={item.maxDaily}
+                                  />
+                              </TableCell>
+                          ))}
+                      </React.Fragment>
+                  )
+                })}
+              </TableRow>
+            )
+          })}
         </TableBody>
       </Table>
     </div>
