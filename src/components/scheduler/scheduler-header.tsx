@@ -96,10 +96,10 @@ export function SchedulerHeader({
             </div>
             <div className="flex items-center gap-4">
                 <Tabs value={viewMode} onValueChange={(value) => setViewMode(value as ViewMode)}>
-                <TabsList className="bg-muted/80">
-                    <TabsTrigger value="general">General</TabsTrigger>
-                    <TabsTrigger value="detailed">Detallado</TabsTrigger>
-                </TabsList>
+                    <TabsList>
+                        <TabsTrigger value="general">General</TabsTrigger>
+                        <TabsTrigger value="detailed">Detallado</TabsTrigger>
+                    </TabsList>
                 </Tabs>
                  <Button onClick={onExport} variant="outline">
                     <FileDown className="mr-2 h-4 w-4 text-primary" />
