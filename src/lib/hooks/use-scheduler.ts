@@ -22,12 +22,23 @@ const transformInitialData = (items: Item[]): Schedule => {
   return schedule;
 };
 
+const months = [
+  'ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 
+  'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'
+];
+const monthOptions = months.map(m => ({ value: m, label: m.charAt(0) + m.slice(1).toLowerCase() }));
+
+const services = ['PACIENTES', 'COMEDOR', 'NUTRICIÓN CLÍNICA'];
+const serviceOptions = services.map(s => ({ value: s, label: s }));
+
 export const useScheduler = () => {
   const [items] = useState<Item[]>(initialItems);
   const [schedule, setSchedule] = useState<Schedule>(() => transformInitialData(items));
   const [viewMode, setViewMode] = useState<ViewMode>('general');
   const [filter, setFilter] = useState('');
   const { toast } = useToast();
+  const [selectedMonth, setSelectedMonth] = useState<string>(months[0]);
+  const [selectedService, setSelectedService] = useState<string>(services[0]);
 
   const filteredItems = useMemo(() => {
     if (!filter) return items;
@@ -87,12 +98,17 @@ export const useScheduler = () => {
     }, [getDailyTotal, items, schedule, toast]);
 
   const handleExport = useCallback(() => {
-    exportToCsv(filteredItems, schedule, totals, viewMode);
+    const fileName = `Programacion_${selectedMonth}_${selectedService.replace(/\s+/g, '_')}.csv`;
+    exportToCsv(filteredItems, schedule, totals, viewMode, fileName);
     toast({
       title: "Exportación Exitosa",
       description: "Tu planificación ha sido exportada a CSV.",
     });
-  }, [filteredItems, schedule, totals, viewMode, toast]);
+  }, [filteredItems, schedule, totals, viewMode, toast, selectedMonth, selectedService]);
+
+  const selectedMonthLabel = useMemo(() => {
+    return monthOptions.find(m => m.value === selectedMonth)?.label || selectedMonth;
+  }, [selectedMonth]);
 
   return {
     items: filteredItems,
@@ -106,5 +122,12 @@ export const useScheduler = () => {
     updateQuantity,
     getDailyTotal,
     handleExport,
+    selectedMonth,
+    setSelectedMonth,
+    monthOptions,
+    selectedService,
+    setSelectedService,
+    serviceOptions,
+    selectedMonthLabel,
   };
 };

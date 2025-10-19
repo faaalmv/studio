@@ -20,7 +20,7 @@ export function getGroupColorClass(group: string, type: 'border' | 'background')
   return groupColors[group]?.[type] || '';
 }
 
-export function exportToCsv(items: Item[], schedule: Schedule, totals: Totals, viewMode: ViewMode) {
+export function exportToCsv(items: Item[], schedule: Schedule, totals: Totals, viewMode: ViewMode, fileName: string) {
   let csvContent = "data:text/csv;charset=utf-8,";
   
   const headers = ['Descripción', 'Código', 'Grupo', 'Total Planificado', 'Total Restante'];
@@ -60,7 +60,6 @@ export function exportToCsv(items: Item[], schedule: Schedule, totals: Totals, v
   const encodedUri = encodeURI(csvContent);
   const link = document.createElement("a");
   link.setAttribute("href", encodedUri);
-  const fileName = `plan-mensual-${viewMode}-${new Date().toISOString().slice(0, 10)}.csv`;
   link.setAttribute("download", fileName);
   document.body.appendChild(link);
   link.click();
