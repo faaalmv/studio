@@ -15,9 +15,10 @@ interface GroupHeaderProps {
   isExpanded: boolean;
   onToggle: () => void;
   colSpan: number;
+  stickyTopClass: string;
 }
 
-export const SchedulerGroupHeader: React.FC<GroupHeaderProps> = ({ group, items, totals, isExpanded, onToggle, colSpan }) => {
+export const SchedulerGroupHeader: React.FC<GroupHeaderProps> = ({ group, items, totals, isExpanded, onToggle, colSpan, stickyTopClass }) => {
   const summary = useMemo(() => {
     if (!items || items.length === 0) {
       return { itemCount: 0, availablePercent: 100, progressBarClass: 'bg-green-500' };
@@ -76,7 +77,7 @@ export const SchedulerGroupHeader: React.FC<GroupHeaderProps> = ({ group, items,
 
   return (
     <TableRow
-      className={cn("cursor-pointer group hover:z-20", isExpanded && "sticky top-[8rem] z-10")}
+      className={cn("cursor-pointer group hover:z-20 sticky", stickyTopClass)}
       onClick={onToggle}
       aria-expanded={isExpanded}
     >

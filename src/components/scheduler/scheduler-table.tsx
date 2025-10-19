@@ -20,7 +20,7 @@ const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals
     
     const groupBg = cn("bg-card");
     const groupBorder = cn(
-        "shadow-[inset_6px_0_8px_-5px_var(--group-color)]",
+        "shadow-[inset_4px_0_6px_-4px_var(--group-color)]",
         {
             '[--group-color:hsl(var(--chart-1))]': item.group === 'Abarrotes',
             '[--group-color:hsl(var(--chart-2))]': item.group === 'Carnes',
@@ -52,7 +52,7 @@ const MemoizedTableRow = memo(function MemoizedTableRow({ item, schedule, totals
     const rowClasses = "group row-transition animate-slide-down-fade-in bg-card hover:z-10";
 
     return (
-        <TableRow className={cn(rowClasses, className)} style={style}>
+        <TableRow className={cn(rowClasses, className, "relative")} style={style}>
             <TableCell className={cn(cellStyles, "sticky left-0 z-10 w-48 p-2 text-left align-middle", isScrolled && "shadow-lg", groupBg, "shadow-[inset_0_-1px_0_0_hsl(var(--border))]")}>
                 <div className="font-bold text-sm">{item.description}</div>
                 <Badge variant="secondary" className="font-mono text-xs mt-1">{item.code}</Badge>
@@ -162,27 +162,30 @@ export function SchedulerTable({
     }, []);
 
     const headerCellStyles = "p-2 align-middle text-sm font-semibold text-center bg-card shadow-inner-white";
-    const stickyHeaderBase = "sticky z-20 bg-card";
     
     const handleColumnHover = (day: number | null) => {
         setHoveredColumn(day);
     };
 
+    const headerHeight = viewMode === 'detailed' ? 'top-12' : 'top-0';
+    const groupHeaderTop = viewMode === 'detailed' ? 'top-[8rem]' : 'top-[4rem]';
+
+
     return (
         <div ref={scrollContainerRef} onScroll={handleScroll} className="h-full w-full overflow-auto">
             <Table className="min-w-max border-separate border-spacing-0">
-                <TableHeader>
+                <TableHeader className="sticky top-0 z-30 bg-card">
                     <TableRow className="hover:bg-transparent">
-                        <TableHead className={cn(headerCellStyles, stickyHeaderBase, "left-0 w-48 z-30 border-b text-left top-0", isScrolled && "shadow-lg")}>Elemento</TableHead>
-                        <TableHead className={cn(headerCellStyles, stickyHeaderBase, "left-48 w-24 z-30 border-b text-center top-0", isScrolled && "shadow-lg")}>Unidad</TableHead>
-                        <TableHead className={cn(headerCellStyles, stickyHeaderBase, "left-[18rem] w-24 z-30 border-b top-0", isScrolled && "shadow-lg")}>Total</TableHead>
-                        <TableHead className={cn(headerCellStyles, stickyHeaderBase, "left-[24rem] w-24 z-30 border-b top-0", isScrolled && "shadow-lg")}>Rest.</TableHead>
-                        <TableHead className={cn(headerCellStyles, stickyHeaderBase, "left-[30rem] w-24 z-30 border-b top-0", isScrolled && "shadow-lg")}>Estado</TableHead>
+                        <TableHead className={cn(headerCellStyles, "sticky left-0 w-48 z-40 border-b text-left", isScrolled && "shadow-lg")}>Elemento</TableHead>
+                        <TableHead className={cn(headerCellStyles, "sticky left-48 w-24 z-40 border-b text-center", isScrolled && "shadow-lg")}>Unidad</TableHead>
+                        <TableHead className={cn(headerCellStyles, "sticky left-[18rem] w-24 z-40 border-b", isScrolled && "shadow-lg")}>Total</TableHead>
+                        <TableHead className={cn(headerCellStyles, "sticky left-[24rem] w-24 z-40 border-b", isScrolled && "shadow-lg")}>Rest.</TableHead>
+                        <TableHead className={cn(headerCellStyles, "sticky left-[30rem] w-24 z-40 border-b", isScrolled && "shadow-lg")}>Estado</TableHead>
                         {days.map(day => (
                             <TableHead 
                                 key={day} 
                                 colSpan={viewMode === 'detailed' ? 3 : 1} 
-                                className={cn(headerCellStyles, "w-24 border-b border-l top-0 sticky z-20 transition-colors duration-200", hoveredColumn === day && "bg-primary/5")}
+                                className={cn(headerCellStyles, "w-24 border-b border-l transition-colors duration-200", hoveredColumn === day && "bg-primary/5")}
                                 onMouseEnter={() => handleColumnHover(day)}
                                 onMouseLeave={() => handleColumnHover(null)}
                             >
@@ -192,16 +195,16 @@ export function SchedulerTable({
                     </TableRow>
                     {viewMode === 'detailed' && (
                         <TableRow className="hover:bg-transparent">
-                            <TableHead className={cn(headerCellStyles, stickyHeaderBase, "left-0 top-12 z-30", isScrolled && "shadow-lg")}></TableHead>
-                            <TableHead className={cn(headerCellStyles, stickyHeaderBase, "left-48 top-12 z-30", isScrolled && "shadow-lg")}></TableHead>
-                            <TableHead className={cn(headerCellStyles, stickyHeaderBase, "left-[18rem] top-12 z-30", isScrolled && "shadow-lg")}></TableHead>
-                            <TableHead className={cn(headerCellStyles, stickyHeaderBase, "left-[24rem] top-12 z-30", isScrolled && "shadow-lg")}></TableHead>
-                            <TableHead className={cn(headerCellStyles, stickyHeaderBase, "left-[30rem] top-12 z-30", isScrolled && "shadow-lg")}></TableHead>
+                            <TableHead className={cn(headerCellStyles, "sticky left-0 z-40 border-b", isScrolled && "shadow-lg")}></TableHead>
+                            <TableHead className={cn(headerCellStyles, "sticky left-48 z-40 border-b", isScrolled && "shadow-lg")}></TableHead>
+                            <TableHead className={cn(headerCellStyles, "sticky left-[18rem] z-40 border-b", isScrolled && "shadow-lg")}></TableHead>
+                            <TableHead className={cn(headerCellStyles, "sticky left-[24rem] z-40 border-b", isScrolled && "shadow-lg")}></TableHead>
+                            <TableHead className={cn(headerCellStyles, "sticky left-[30rem] z-40 border-b", isScrolled && "shadow-lg")}></TableHead>
                             {days.map(day => (
                                 <React.Fragment key={`meals-${day}`}>
-                                    <TableHead className={cn(headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 top-12 sticky z-20 border-l transition-colors duration-200", hoveredColumn === day && "bg-primary/5")} onMouseEnter={() => handleColumnHover(day)} onMouseLeave={() => handleColumnHover(null)}>D</TableHead>
-                                    <TableHead className={cn(headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 top-12 sticky z-20 border-l transition-colors duration-200", hoveredColumn === day && "bg-primary/5")} onMouseEnter={() => handleColumnHover(day)} onMouseLeave={() => handleColumnHover(null)}>A</TableHead>
-                                    <TableHead className={cn(headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 top-12 sticky z-20 border-l transition-colors duration-200", hoveredColumn === day && "bg-primary/5")} onMouseEnter={() => handleColumnHover(day)} onMouseLeave={() => handleColumnHover(null)}>C</TableHead>
+                                    <TableHead className={cn(headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 border-b border-l transition-colors duration-200", hoveredColumn === day && "bg-primary/5")} onMouseEnter={() => handleColumnHover(day)} onMouseLeave={() => handleColumnHover(null)}>D</TableHead>
+                                    <TableHead className={cn(headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 border-b border-l transition-colors duration-200", hoveredColumn === day && "bg-primary/5")} onMouseEnter={() => handleColumnHover(day)} onMouseLeave={() => handleColumnHover(null)}>A</TableHead>
+                                    <TableHead className={cn(headerCellStyles, "text-center text-xs font-medium text-muted-foreground w-12 border-b border-l transition-colors duration-200", hoveredColumn === day && "bg-primary/5")} onMouseEnter={() => handleColumnHover(day)} onMouseLeave={() => handleColumnHover(null)}>C</TableHead>
                                 </React.Fragment>
                             ))}
                         </TableRow>
@@ -223,6 +226,7 @@ export function SchedulerTable({
                                     isExpanded={isExpanded}
                                     onToggle={() => toggleItem(group.name)}
                                     colSpan={5 + (viewMode === 'detailed' ? days.length * 3 : days.length)}
+                                    stickyTopClass={viewMode === 'detailed' ? 'top-[8rem]' : 'top-[4rem]'}
                                 />
 
                                 {isExpanded && groupItems.map((item, index) => (
