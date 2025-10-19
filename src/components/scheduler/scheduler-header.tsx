@@ -1,5 +1,7 @@
+
 "use client";
 
+import { useId } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -37,11 +39,13 @@ export function SchedulerHeader({
   serviceOptions,
   selectedMonthLabel,
 }: SchedulerHeaderProps) {
+  const id = useId();
+
   return (
     <div className="flex flex-col gap-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
             <div className="text-left">
-              <h1 className="text-3xl lg:text-4xl font-black text-foreground tracking-tight uppercase" style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 800 }}>
+              <h1 id="main-heading" className="text-3xl lg:text-4xl font-black text-foreground tracking-tight uppercase" style={{ fontFamily: "'Poppins', sans-serif", fontWeight: 800 }}>
                 Programación Mensual
               </h1>
               <p className="text-primary mt-1 text-lg font-bold uppercase tracking-wider">
@@ -51,9 +55,9 @@ export function SchedulerHeader({
             
             <div className="flex flex-col sm:flex-row sm:items-end gap-4 w-full sm:w-auto">
               <div className="w-full sm:w-48">
-                <label htmlFor="month-select" className="block text-sm font-medium text-muted-foreground">Mes</label>
+                <label htmlFor={`${id}-month-select`} className="block text-sm font-medium text-muted-foreground">Mes</label>
                 <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-                    <SelectTrigger id="month-select" className="mt-1 glass-select-button">
+                    <SelectTrigger id={`${id}-month-select`} className="mt-1 glass-select-button">
                         <SelectValue placeholder="Seleccionar Mes" />
                     </SelectTrigger>
                     <SelectContent className="glass-select-menu">
@@ -66,9 +70,9 @@ export function SchedulerHeader({
                 </Select>
               </div>
               <div className="w-full sm:w-48">
-                 <label htmlFor="service-select" className="block text-sm font-medium text-muted-foreground">Servicio</label>
+                 <label htmlFor={`${id}-service-select`} className="block text-sm font-medium text-muted-foreground">Servicio</label>
                 <Select value={selectedService} onValueChange={setSelectedService}>
-                    <SelectTrigger id="service-select" className="mt-1 glass-select-button">
+                    <SelectTrigger id={`${id}-service-select`} className="mt-1 glass-select-button">
                         <SelectValue placeholder="Seleccionar Servicio" />
                     </SelectTrigger>
                     <SelectContent className="glass-select-menu">
@@ -86,12 +90,14 @@ export function SchedulerHeader({
 
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="relative w-full sm:w-auto sm:flex-grow max-w-md">
+                <label htmlFor={`${id}-filter-input`} className="sr-only">Filtrar</label>
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                placeholder="Filtrar por código, descripción o grupo..."
-                value={filter}
-                onChange={(e) => setFilter(e.target.value)}
-                className="pl-10 bg-background/50"
+                  id={`${id}-filter-input`}
+                  placeholder="Filtrar por código, descripción o grupo..."
+                  value={filter}
+                  onChange={(e) => setFilter(e.target.value)}
+                  className="pl-10 bg-background/50"
                 />
             </div>
             <div className="flex items-center gap-4">
