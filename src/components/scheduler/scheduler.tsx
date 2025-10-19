@@ -20,7 +20,7 @@ export default function Scheduler() {
           onExport={scheduler.handleExport}
         />
       </CardHeader>
-      <CardContent className="p-0 flex-grow">
+      <CardContent className="p-0 flex-grow overflow-auto">
           <SchedulerTable {...scheduler} />
       </CardContent>
     </Card>

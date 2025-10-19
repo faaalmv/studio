@@ -28,7 +28,7 @@ export function SchedulerTable({
   const stickyCellClass = "sticky bg-card/95 backdrop-blur-sm z-[1]";
   
   return (
-    <div className="w-full h-full overflow-auto border-t">
+    <div className="relative border-t">
       <Table className="min-w-max border-separate border-spacing-0">
         <TableHeader className="sticky top-0 z-20 bg-card/95 backdrop-blur-sm">
           <TableRow className="hover:bg-transparent">
