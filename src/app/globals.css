@@ -4,25 +4,25 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 224 71.4% 4.1%;
+    --background: 225 15% 15%;
+    --foreground: 215 15% 95%;
 
-    --card: 0 0% 100%;
+    --card: 220 15% 96%;
     --card-foreground: 224 71.4% 4.1%;
 
     --popover: 0 0% 100%;
     --popover-foreground: 224 71.4% 4.1%;
 
-    --primary: 173 45% 55%; /* Soft Teal: #63B7AF */
+    --primary: 260 60% 60%;
     --primary-foreground: 0 0% 98%;
 
     --secondary: 220 13% 91%;
     --secondary-foreground: 220 14% 10%;
 
-    --muted: 220 13% 96%;
-    --muted-foreground: 220 9% 46%;
+    --muted: 220 15% 25%;
+    --muted-foreground: 215 15% 65%;
 
-    --accent: 39 67% 62%; /* Mustard Yellow: #D6A756 */
+    --accent: 173 45% 55%;
     --accent-foreground: 0 0% 98%;
 
     --destructive: 0 84.2% 60.2%;
@@ -30,46 +30,37 @@
 
     --border: 220 13% 88%;
     --input: 220 13% 91%;
-    --ring: 173 45% 55%;
+    --ring: 260 60% 60%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    --chart-1: 173 45% 55%; /* Soft Teal */
-    --chart-2: 120 40% 65%; /* Soft Green */
-    --chart-3: 39 67% 62%;  /* Mustard Yellow */
-    --chart-4: 260 50% 70%; /* Soft Purple */
-    --chart-5: 25 60% 70%;  /* Soft Orange */
+    --chart-1: 173 45% 55%;
+    --chart-2: 120 40% 65%;
+    --chart-3: 39 67% 62%;
+    --chart-4: 260 50% 70%;
+    --chart-5: 25 60% 70%;
   }
 
   .dark {
     --background: 225 15% 15%;
     --foreground: 215 15% 95%;
-
-    --card: 225 15% 15%;
+    --card: 225 15% 18%;
     --card-foreground: 215 15% 95%;
-
     --popover: 225 15% 15%;
     --popover-foreground: 215 15% 95%;
-
-    --primary: 173 45% 55%;
+    --primary: 260 60% 60%;
     --primary-foreground: 0 0% 98%;
-
     --secondary: 220 13% 25%;
     --secondary-foreground: 0 0% 98%;
-    
     --muted: 220 13% 25%;
     --muted-foreground: 215 15% 65%;
-
-    --accent: 39 67% 62%;
+    --accent: 173 45% 55%;
     --accent-foreground: 0 0% 98%;
-
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
-
-    --border: 220 13% 25%;
+    --border: 220 13% 30%;
     --input: 220 13% 25%;
-    --ring: 173 45% 55%;
-    
+    --ring: 260 60% 60%;
     --chart-1: 173 45% 55%;
     --chart-2: 120 40% 65%;
     --chart-3: 39 67% 62%;
@@ -85,5 +76,23 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer components {
+  .glass-select-button {
+    @apply bg-white/70 backdrop-blur-sm transition-all duration-200 ease-in-out;
+    @apply dark:bg-black/50;
+  }
+  .glass-select-button:hover {
+    @apply bg-white/90 dark:bg-black/70;
+  }
+  .glass-select-button[data-state=open] {
+     @apply ring-2 ring-primary;
+  }
+
+  .glass-select-menu {
+    @apply bg-white/70 backdrop-blur-sm;
+    @apply dark:bg-black/50;
   }
 }
