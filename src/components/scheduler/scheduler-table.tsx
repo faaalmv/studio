@@ -223,7 +223,6 @@ export function SchedulerTable({
                                     isExpanded={isExpanded}
                                     onToggle={() => toggleItem(group.name)}
                                     colSpan={5 + (viewMode === 'detailed' ? days.length * 3 : days.length)}
-                                    isScrolled={isScrolled}
                                 />
 
                                 {isExpanded && groupItems.map((item, index) => (
@@ -251,6 +250,3 @@ export function SchedulerTable({
         </div>
     );
 }
-
-
-    

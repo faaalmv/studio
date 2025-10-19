@@ -9,15 +9,17 @@ export default function Scheduler() {
   const scheduler = useScheduler();
 
   return (
-    <div className="p-2 sm:p-4 lg:p-8 bg-background min-h-screen">
+    <div className="p-2 sm:p-4 lg:p-8 bg-background min-h-screen flex flex-col">
       <header className="bg-card/70 backdrop-blur-md rounded-xl shadow-lg p-4 sm:p-6 mb-8 sticky top-4 z-50">
         <SchedulerHeader {...scheduler} />
       </header>
-      <Card className="w-full overflow-hidden shadow-2xl shadow-primary/10 h-[calc(100vh-14rem)] sm:h-[calc(100vh-16rem)] flex flex-col rounded-2xl border-primary/10">
-        <CardContent className="p-0 flex-grow relative">
-            <SchedulerTable {...scheduler} />
-        </CardContent>
-      </Card>
+      <main className="flex-grow">
+        <Card className="w-full h-full overflow-hidden shadow-2xl shadow-primary/10 rounded-2xl border-primary/10">
+          <CardContent className="p-0 h-full">
+              <SchedulerTable {...scheduler} />
+          </CardContent>
+        </Card>
+      </main>
     </div>
   );
 }

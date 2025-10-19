@@ -15,10 +15,9 @@ interface GroupHeaderProps {
   isExpanded: boolean;
   onToggle: () => void;
   colSpan: number;
-  isScrolled: boolean;
 }
 
-export const SchedulerGroupHeader: React.FC<GroupHeaderProps> = ({ group, items, totals, isExpanded, onToggle, colSpan, isScrolled }) => {
+export const SchedulerGroupHeader: React.FC<GroupHeaderProps> = ({ group, items, totals, isExpanded, onToggle, colSpan }) => {
   const summary = useMemo(() => {
     if (!items || items.length === 0) {
       return { itemCount: 0, availablePercent: 100, progressBarClass: 'bg-green-500' };
@@ -77,14 +76,11 @@ export const SchedulerGroupHeader: React.FC<GroupHeaderProps> = ({ group, items,
 
   return (
     <TableRow
-      className={cn("cursor-pointer group hover:z-20", isExpanded && "sticky top-[8.1rem] z-10")}
+      className={cn("cursor-pointer group hover:z-20", isExpanded && "sticky top-[8rem] z-10")}
       onClick={onToggle}
-      style={{
-        boxShadow: isExpanded && isScrolled ? '0 4px 12px rgba(0,0,0,0.1)' : 'none'
-      }}
       aria-expanded={isExpanded}
     >
-      <TableCell colSpan={colSpan} className={cn("p-0 border-b", groupBg, groupBorder, isScrolled && isExpanded && "shadow-lg")}>
+      <TableCell colSpan={colSpan} className={cn("p-0 border-b", groupBg, groupBorder)}>
         <div className="flex items-center justify-between w-full px-4 py-2">
           <div className="flex items-center gap-4">
             <ChevronDown
@@ -107,5 +103,3 @@ export const SchedulerGroupHeader: React.FC<GroupHeaderProps> = ({ group, items,
     </TableRow>
   );
 };
-
-    
