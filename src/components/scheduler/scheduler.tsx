@@ -14,7 +14,8 @@ export default function Scheduler() {
         <SchedulerHeader {...scheduler} />
       </header>
       <main className="flex-grow flex flex-col">
-        <Card className="w-full flex-grow overflow-hidden shadow-2xl shadow-primary/10 rounded-2xl border-primary/10">
+        {/* Añadir transparencia y desenfoque a la tarjeta principal (Glassmorphism) */}
+        <Card className="w-full flex-grow overflow-hidden shadow-2xl shadow-primary/10 rounded-2xl border-primary/10 bg-card/90 backdrop-blur-sm">
           <CardContent className="p-0 h-full">
               <SchedulerTable {...scheduler} />
           </CardContent>
