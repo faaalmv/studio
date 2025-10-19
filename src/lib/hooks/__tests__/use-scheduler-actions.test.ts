@@ -1,5 +1,5 @@
 
-import { renderHook, act } from '@testing-library/react-hooks';
+import { renderHook, act } from '@testing-library/react';
 import { useSchedulerActions } from '../use-scheduler-actions';
 import { useToast } from '@/hooks/use-toast';
 
